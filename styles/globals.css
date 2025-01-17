@@ -269,4 +269,34 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #666;
+}
+
+/* Mermaid 图表样式 */
+.mermaid-wrapper {
+  @apply my-8 flex justify-center;
+}
+
+.mermaid {
+  @apply bg-white rounded-lg p-4 shadow-sm;
+  min-width: 300px;
+}
+
+.mermaid .actor {
+  @apply fill-white stroke-gray-600 stroke-2;
+}
+
+.mermaid .messageText {
+  @apply fill-gray-700 font-medium;
+}
+
+.mermaid .messageLine0 {
+  @apply stroke-gray-500 stroke-2;
+}
+
+.mermaid .labelBox {
+  @apply fill-blue-50 stroke-blue-500;
+}
+
+.mermaid .labelText {
+  @apply fill-blue-700;
 } 

@@ -3,6 +3,7 @@ import path from 'path'
 import matter from 'gray-matter'
 import { serialize } from 'next-mdx-remote/serialize'
 import { MDXRemote } from 'next-mdx-remote'
+import Mermaid from '../../components/Mermaid'
 
 const proseStyles = {
   color: '#374151',
@@ -52,14 +53,18 @@ export default function Doc({ source, frontMatter }) {
               borderRadius: '0.25em',
               fontSize: '0.875em',
             }} {...props} />,
-            pre: (props) => <pre style={{
-              backgroundColor: '#1f2937',
-              color: '#e5e7eb',
-              padding: '1em',
-              borderRadius: '0.375em',
-              overflowX: 'auto',
-              margin: '1.25em 0',
-            }} {...props} />,
+            pre: (props) => {
+              const isMermaid = props.children?.props?.className === 'language-mermaid';
+              if (isMermaid) {
+                return <Mermaid chart={props.children.props.children} />;
+              }
+              return <pre style={{
+                padding: '1em',
+                borderRadius: '0.375em',
+                overflowX: 'auto',
+                margin: '1.25em 0',
+              }} {...props} />;
+            },
           }} />
         </article>
       </main>
