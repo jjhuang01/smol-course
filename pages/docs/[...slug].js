@@ -6,6 +6,14 @@ import { MDXRemote } from 'next-mdx-remote'
 import CodeBlock from '../../components/CodeBlock'
 import Mermaid from '../../components/Mermaid'
 import Image from 'next/image'
+import 'prismjs/themes/prism-tomorrow.css'
+import 'prismjs/components/prism-python'
+import 'prismjs/components/prism-bash'
+import 'prismjs/components/prism-javascript'
+import 'prismjs/components/prism-jsx'
+import 'prismjs/components/prism-typescript'
+import 'prismjs/components/prism-json'
+import 'prismjs/components/prism-markdown'
 
 const proseStyles = {
   color: 'var(--tw-prose-body)',
@@ -94,6 +102,62 @@ export default function Doc({ source, frontMatter }) {
         .prose-wrapper code {
           font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
           font-size: 0.875em;
+        }
+
+        /* Prism.js 语法高亮自定义样式 */
+        .token.comment,
+        .token.prolog,
+        .token.doctype,
+        .token.cdata {
+          color: #8b9eb0;
+        }
+
+        .token.punctuation {
+          color: #e2e8f0;
+        }
+
+        .token.property,
+        .token.tag,
+        .token.boolean,
+        .token.number,
+        .token.constant,
+        .token.symbol,
+        .token.deleted {
+          color: #f687b3;
+        }
+
+        .token.selector,
+        .token.attr-name,
+        .token.string,
+        .token.char,
+        .token.builtin,
+        .token.inserted {
+          color: #84cc16;
+        }
+
+        .token.operator,
+        .token.entity,
+        .token.url,
+        .language-css .token.string,
+        .style .token.string {
+          color: #a78bfa;
+        }
+
+        .token.atrule,
+        .token.attr-value,
+        .token.keyword {
+          color: #60a5fa;
+        }
+
+        .token.function,
+        .token.class-name {
+          color: #f59e0b;
+        }
+
+        .token.regex,
+        .token.important,
+        .token.variable {
+          color: #ec4899;
         }
       `}</style>
       <main>
