@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Disclosure, Transition } from '@headlessui/react'
-import { ChevronRightIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
+import { ChevronRightIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 
 const menuItems = [
   {
@@ -88,7 +88,7 @@ export default function Layout({ children }) {
                   onClick={() => setIsSidebarOpen(false)}
                 >
                   <span className="sr-only">关闭侧边栏</span>
-                  <XIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                  <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
                 </button>
               </div>
               <SidebarContent />
@@ -115,7 +115,7 @@ export default function Layout({ children }) {
             onClick={() => setIsSidebarOpen(true)}
           >
             <span className="sr-only">打开侧边栏</span>
-            <MenuIcon className="h-6 w-6" aria-hidden="true" />
+            <Bars3Icon className="h-6 w-6" aria-hidden="true" />
           </button>
           <div className="flex-1 px-4 flex justify-between">
             <div className="flex-1 flex">
