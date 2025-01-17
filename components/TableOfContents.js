@@ -11,8 +11,13 @@ export default function TableOfContents() {
       .filter(element => element && element.textContent)
       .map(element => {
         const text = element.textContent.trim();
+        const id = text.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '-');
+        // 设置元素的 ID
+        if (!element.id) {
+          element.id = id;
+        }
         return {
-          id: element.id || text.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          id: element.id || id,
           text,
           level: Number(element.tagName.charAt(1)),
         };
@@ -21,26 +26,18 @@ export default function TableOfContents() {
     
     setHeadings(elements);
 
-    // 为没有 id 的标题添加 id
-    elements.forEach(heading => {
-      if (!document.getElementById(heading.id)) {
-        const element = Array.from(document.querySelectorAll(`h${heading.level}`))
-          .find(el => el.textContent.trim() === heading.text);
-        if (element) {
-          element.id = heading.id;
-        }
-      }
-    });
-
     const observer = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {
           if (entry.isIntersecting && entry.target.id) {
             setActiveId(entry.target.id);
+            // 更新 URL hash，但不触发滚动
+            const newUrl = window.location.pathname + '#' + entry.target.id;
+            window.history.replaceState(null, '', newUrl);
           }
         });
       },
-      { rootMargin: '0% 0% -80% 0%' }
+      { rootMargin: '-20% 0% -35% 0%' }
     );
 
     elements.forEach(heading => {
@@ -70,6 +67,25 @@ export default function TableOfContents() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleClick = (e, id) => {
+    e.preventDefault();
+    const element = document.getElementById(id);
+    if (element) {
+      const offset = 80; // 顶部偏移量，避免被固定导航栏遮挡
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+
+      // 更新 URL，但不触发默认的滚动行为
+      window.history.pushState(null, '', `#${id}`);
+      setActiveId(id);
+    }
+  };
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -104,9 +120,10 @@ export default function TableOfContents() {
                 >
                   <a
                     href={`#${heading.id}`}
+                    onClick={(e) => handleClick(e, heading.id)}
                     className={`block py-1 text-sm transition-colors duration-200 ${
                       activeId === heading.id
-                        ? 'text-primary-600 dark:text-primary-400'
+                        ? 'text-primary-600 dark:text-primary-400 font-medium'
                         : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                     }`}
                   >
