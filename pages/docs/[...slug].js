@@ -3,6 +3,7 @@ import path from 'path'
 import matter from 'gray-matter'
 import { serialize } from 'next-mdx-remote/serialize'
 import { MDXRemote } from 'next-mdx-remote'
+import CodeBlock from '../../components/CodeBlock'
 import Mermaid from '../../components/Mermaid'
 
 const proseStyles = {

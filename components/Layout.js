@@ -8,6 +8,9 @@ import Prism from 'prismjs'
 import ThemeToggle from './ThemeToggle'
 import Search from './Search'
 import Pagination from './Pagination'
+import ProgressBar from './ProgressBar'
+import TableOfContents from './TableOfContents'
+import CodeBlock from './CodeBlock'
 
 const menuItems = [
   {
@@ -175,6 +178,7 @@ export default function Layout({ children }) {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <ProgressBar />
       <div className="flex h-screen overflow-hidden">
         {/* Mobile sidebar */}
         <div className="lg:hidden">
@@ -280,6 +284,7 @@ export default function Layout({ children }) {
             </div>
           </main>
         </div>
+        <TableOfContents />
       </div>
     </div>
   )
