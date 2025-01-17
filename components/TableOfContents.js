@@ -11,13 +11,17 @@ export default function TableOfContents() {
       .filter(element => element && element.textContent)
       .map(element => {
         const text = element.textContent.trim();
-        const id = text.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '-');
+        // 生成一个更简单的 ID
+        const id = text
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^a-z0-9-\u4e00-\u9fa5]/g, '');
+        
         // 设置元素的 ID
-        if (!element.id) {
-          element.id = id;
-        }
+        element.id = element.id || id;
+        
         return {
-          id: element.id || id,
+          id: element.id,
           text,
           level: Number(element.tagName.charAt(1)),
         };
@@ -31,13 +35,13 @@ export default function TableOfContents() {
         entries.forEach(entry => {
           if (entry.isIntersecting && entry.target.id) {
             setActiveId(entry.target.id);
-            // 更新 URL hash，但不触发滚动
-            const newUrl = window.location.pathname + '#' + entry.target.id;
-            window.history.replaceState(null, '', newUrl);
           }
         });
       },
-      { rootMargin: '-20% 0% -35% 0%' }
+      { 
+        rootMargin: '-20% 0% -35% 0%',
+        threshold: 0.5
+      }
     );
 
     elements.forEach(heading => {
@@ -47,14 +51,7 @@ export default function TableOfContents() {
       }
     });
 
-    return () => {
-      elements.forEach(heading => {
-        const element = document.getElementById(heading.id);
-        if (element) {
-          observer.unobserve(element);
-        }
-      });
-    };
+    return () => observer.disconnect();
   }, []);
 
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -68,23 +65,26 @@ export default function TableOfContents() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleClick = (e, id) => {
-    e.preventDefault();
+  const scrollToHeading = (id) => {
     const element = document.getElementById(id);
     if (element) {
-      const offset = 80; // 顶部偏移量，避免被固定导航栏遮挡
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
+      const offset = 100; // 顶部偏移量
+      const bodyRect = document.body.getBoundingClientRect().top;
+      const elementRect = element.getBoundingClientRect().top;
+      const elementPosition = elementRect - bodyRect;
+      const offsetPosition = elementPosition - offset;
 
       window.scrollTo({
         top: offsetPosition,
         behavior: 'smooth'
       });
-
-      // 更新 URL，但不触发默认的滚动行为
-      window.history.pushState(null, '', `#${id}`);
       setActiveId(id);
     }
+  };
+
+  const handleClick = (e, id) => {
+    e.preventDefault();
+    scrollToHeading(id);
   };
 
   const scrollToTop = () => {
@@ -113,22 +113,21 @@ export default function TableOfContents() {
           </div>
           {isExpanded && headings.length > 0 && (
             <ul className="space-y-2">
-              {headings.map(heading => heading && (
+              {headings.map(heading => (
                 <li
                   key={heading.id}
                   style={{ paddingLeft: `${(heading.level - 2) * 1}rem` }}
                 >
-                  <a
-                    href={`#${heading.id}`}
-                    onClick={(e) => handleClick(e, heading.id)}
-                    className={`block py-1 text-sm transition-colors duration-200 ${
+                  <button
+                    onClick={() => scrollToHeading(heading.id)}
+                    className={`w-full text-left py-1 text-sm transition-colors duration-200 ${
                       activeId === heading.id
                         ? 'text-primary-600 dark:text-primary-400 font-medium'
                         : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                     }`}
                   >
                     {heading.text}
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>
