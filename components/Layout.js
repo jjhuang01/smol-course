@@ -157,6 +157,13 @@ export default function Layout({ children }) {
     };
     flatten(menuItems);
 
+    // 确保按照索引排序
+    flattenedItems.sort((a, b) => {
+      const aIndex = parseFloat(a.index.replace(/[^0-9.]/g, ''));
+      const bIndex = parseFloat(b.index.replace(/[^0-9.]/g, ''));
+      return aIndex - bIndex;
+    });
+
     const currentIndex = flattenedItems.findIndex(item => item.path === router.asPath);
     return {
       prevPage: currentIndex > 0 ? flattenedItems[currentIndex - 1] : null,
@@ -258,12 +265,13 @@ export default function Layout({ children }) {
 
           <main className="flex-1 relative overflow-y-auto focus:outline-none">
             <div className="py-6">
-              <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
                   transition={{ duration: 0.3 }}
+                  className="prose dark:prose-dark max-w-none"
                 >
                   {children}
                   <Pagination prevPage={prevPage} nextPage={nextPage} />

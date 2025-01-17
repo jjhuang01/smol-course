@@ -25,33 +25,74 @@ module.exports = {
         DEFAULT: {
           css: {
             color: theme('colors.gray.900'),
+            maxWidth: 'none',
+            p: {
+              marginTop: '1.5em',
+              marginBottom: '1.5em',
+              lineHeight: '1.75',
+            },
+            'h1, h2, h3, h4': {
+              marginTop: '2em',
+              marginBottom: '1em',
+              lineHeight: '1.3',
+            },
+            h1: {
+              fontSize: '2.5em',
+            },
+            h2: {
+              fontSize: '2em',
+            },
+            h3: {
+              fontSize: '1.5em',
+            },
+            'ul, ol': {
+              marginTop: '1.5em',
+              marginBottom: '1.5em',
+              paddingLeft: '1.5em',
+            },
+            li: {
+              marginTop: '0.5em',
+              marginBottom: '0.5em',
+            },
             a: {
               color: theme('colors.primary.600'),
+              textDecoration: 'none',
               '&:hover': {
                 color: theme('colors.primary.700'),
               },
+            },
+            pre: {
+              marginTop: '1.5em',
+              marginBottom: '1.5em',
+              padding: '1.5em',
+              borderRadius: '0.5em',
+            },
+            code: {
+              fontSize: '0.875em',
+              fontWeight: '600',
+            },
+            img: {
+              marginTop: '2em',
+              marginBottom: '2em',
+              borderRadius: '0.5em',
+            },
+            blockquote: {
+              marginTop: '1.5em',
+              marginBottom: '1.5em',
+              paddingLeft: '1.5em',
             },
           },
         },
         dark: {
           css: {
-            color: theme('colors.gray.100'),
+            color: theme('colors.gray.200'),
             a: {
               color: theme('colors.primary.400'),
               '&:hover': {
                 color: theme('colors.primary.300'),
               },
             },
-            h1: {
-              color: theme('colors.gray.100'),
-            },
-            h2: {
-              color: theme('colors.gray.100'),
-            },
-            h3: {
-              color: theme('colors.gray.100'),
-            },
-            h4: {
+            'h1, h2, h3, h4': {
               color: theme('colors.gray.100'),
             },
             p: {
@@ -62,13 +103,30 @@ module.exports = {
             },
             blockquote: {
               color: theme('colors.gray.300'),
-              borderLeftColor: theme('colors.gray.700'),
+              borderLeftColor: theme('colors.gray.600'),
             },
             code: {
-              color: theme('colors.gray.300'),
+              color: theme('colors.gray.200'),
             },
             pre: {
-              backgroundColor: theme('colors.gray.800'),
+              backgroundColor: theme('colors.gray.900'),
+            },
+            'ul, ol': {
+              color: theme('colors.gray.300'),
+            },
+            li: {
+              color: theme('colors.gray.300'),
+            },
+            hr: {
+              borderColor: theme('colors.gray.700'),
+            },
+            table: {
+              th: {
+                color: theme('colors.gray.200'),
+              },
+              td: {
+                color: theme('colors.gray.300'),
+              },
             },
           },
         },
