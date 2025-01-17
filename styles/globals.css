@@ -7,6 +7,10 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+  
+  body {
+    @apply text-gray-900 bg-gray-50;
+  }
 }
 
 @layer components {
@@ -27,11 +31,11 @@
   }
   
   .prose p {
-    @apply text-gray-600 leading-relaxed mb-6;
+    @apply text-gray-700 leading-relaxed mb-6;
   }
   
   .prose ul {
-    @apply list-disc list-inside text-gray-600 mb-6;
+    @apply list-disc list-inside text-gray-700 mb-6;
   }
   
   .prose li {
@@ -67,7 +71,7 @@
   }
   
   .prose td {
-    @apply p-2 border-b border-gray-200 text-gray-600;
+    @apply p-2 border-b border-gray-200 text-gray-700;
   }
 }
 
