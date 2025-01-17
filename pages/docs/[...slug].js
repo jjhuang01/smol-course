@@ -7,26 +7,30 @@ import CodeBlock from '../../components/CodeBlock'
 import Mermaid from '../../components/Mermaid'
 
 const proseStyles = {
-  color: '#374151',
+  color: 'var(--tw-prose-body)',
   fontSize: '1.1rem',
   lineHeight: 1.7,
 }
 
 const headingStyles = {
   h1: {
-    color: '#111827',
+    color: 'var(--tw-prose-headings)',
     fontWeight: 800,
     fontSize: '2.5rem',
     marginBottom: '2rem',
+    borderBottom: '1px solid var(--tw-prose-hr)',
+    paddingBottom: '0.5rem',
   },
   h2: {
-    color: '#1f2937',
+    color: 'var(--tw-prose-headings)',
     fontWeight: 700,
     fontSize: '2rem',
     margin: '2rem 0 1rem',
+    borderBottom: '1px solid var(--tw-prose-hr)',
+    paddingBottom: '0.3rem',
   },
   h3: {
-    color: '#374151',
+    color: 'var(--tw-prose-headings)',
     fontWeight: 600,
     fontSize: '1.5rem',
     margin: '1.5rem 0 1rem',
@@ -49,11 +53,7 @@ export default function Doc({ source, frontMatter }) {
             p: (props) => <p style={{ margin: '1.25em 0' }} {...props} />,
             ul: (props) => <ul style={{ margin: '1.25em 0', paddingLeft: '1.625em' }} {...props} />,
             li: (props) => <li style={{ margin: '0.5em 0' }} {...props} />,
-            code: (props) => <code style={{
-              padding: '0.2em 0.4em',
-              borderRadius: '0.25em',
-              fontSize: '0.875em',
-            }} {...props} />,
+            code: CodeBlock,
             pre: (props) => {
               const isMermaid = props.children?.props?.className === 'language-mermaid';
               if (isMermaid) {
@@ -73,12 +73,7 @@ export default function Doc({ source, frontMatter }) {
                   </div>
                 );
               }
-              return <pre style={{
-                padding: '1em',
-                borderRadius: '0.375em',
-                overflowX: 'auto',
-                margin: '1.25em 0',
-              }} {...props} />;
+              return <CodeBlock {...props.children.props} />;
             },
           }} />
         </article>
