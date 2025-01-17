@@ -11,6 +11,21 @@
   body {
     @apply text-gray-900 bg-gray-50;
   }
+
+  /* 基础代码样式 */
+  code {
+    @apply px-2 py-1 rounded text-sm text-gray-800 bg-gray-100;
+  }
+
+  pre {
+    @apply p-4 rounded-lg overflow-x-auto mb-6 bg-gray-800;
+    margin: 0;
+  }
+
+  pre code {
+    @apply p-0 bg-transparent text-gray-100;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
 }
 
 @layer components {
@@ -143,6 +158,91 @@
   
   .prose td {
     @apply p-2 border-b border-gray-200 text-gray-700;
+  }
+
+  /* 代码语法高亮 - 深色主题 */
+  .token.comment,
+  .token.prolog,
+  .token.doctype,
+  .token.cdata {
+    @apply text-gray-400;
+  }
+
+  .token.punctuation {
+    @apply text-gray-300;
+  }
+
+  .token.property,
+  .token.tag,
+  .token.boolean,
+  .token.number,
+  .token.constant,
+  .token.symbol,
+  .token.deleted {
+    @apply text-blue-300;
+  }
+
+  .token.selector,
+  .token.attr-name,
+  .token.string,
+  .token.char,
+  .token.builtin,
+  .token.inserted {
+    @apply text-green-300;
+  }
+
+  .token.operator,
+  .token.entity,
+  .token.url,
+  .language-css .token.string,
+  .style .token.string {
+    @apply text-yellow-200;
+  }
+
+  .token.atrule,
+  .token.attr-value,
+  .token.keyword {
+    @apply text-purple-300;
+  }
+
+  .token.function,
+  .token.class-name {
+    @apply text-yellow-300;
+  }
+
+  .token.regex,
+  .token.important,
+  .token.variable {
+    @apply text-orange-300;
+  }
+
+  /* Python 特定语法 */
+  .language-python .token.keyword {
+    @apply text-purple-300;
+  }
+
+  .language-python .token.string {
+    @apply text-green-300;
+  }
+
+  .language-python .token.function {
+    @apply text-yellow-300;
+  }
+
+  .language-python .token.number {
+    @apply text-blue-300;
+  }
+
+  .language-python .token.operator {
+    @apply text-yellow-200;
+  }
+
+  .language-python .token.comment {
+    @apply text-gray-400;
+  }
+
+  .language-python .token.builtin {
+    @apply text-cyan-300;
   }
 }
 
