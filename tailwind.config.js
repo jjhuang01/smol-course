@@ -1,9 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './pages/**/*.{js,ts,jsx,tsx,md,mdx}',
     './components/**/*.{js,ts,jsx,tsx}',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -20,20 +21,58 @@ module.exports = {
           900: '#0c4a6e',
         },
       },
-      typography: {
+      typography: (theme) => ({
         DEFAULT: {
           css: {
-            maxWidth: '65ch',
-            color: '#333',
+            color: theme('colors.gray.900'),
             a: {
-              color: '#0284c7',
+              color: theme('colors.primary.600'),
               '&:hover': {
-                color: '#0369a1',
+                color: theme('colors.primary.700'),
               },
             },
           },
         },
-      },
+        dark: {
+          css: {
+            color: theme('colors.gray.100'),
+            a: {
+              color: theme('colors.primary.400'),
+              '&:hover': {
+                color: theme('colors.primary.300'),
+              },
+            },
+            h1: {
+              color: theme('colors.gray.100'),
+            },
+            h2: {
+              color: theme('colors.gray.100'),
+            },
+            h3: {
+              color: theme('colors.gray.100'),
+            },
+            h4: {
+              color: theme('colors.gray.100'),
+            },
+            p: {
+              color: theme('colors.gray.300'),
+            },
+            strong: {
+              color: theme('colors.gray.100'),
+            },
+            blockquote: {
+              color: theme('colors.gray.300'),
+              borderLeftColor: theme('colors.gray.700'),
+            },
+            code: {
+              color: theme('colors.gray.300'),
+            },
+            pre: {
+              backgroundColor: theme('colors.gray.800'),
+            },
+          },
+        },
+      }),
     },
   },
   plugins: [

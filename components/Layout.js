@@ -5,14 +5,9 @@ import { motion } from 'framer-motion'
 import { Disclosure, Dialog, Transition } from '@headlessui/react'
 import { ChevronRightIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import Prism from 'prismjs'
-import 'prismjs/themes/prism-tomorrow.css'
-import 'prismjs/components/prism-python'
-import 'prismjs/components/prism-bash'
-import 'prismjs/components/prism-javascript'
-import 'prismjs/components/prism-jsx'
-import 'prismjs/components/prism-typescript'
-import 'prismjs/components/prism-json'
-import 'prismjs/components/prism-markdown'
+import ThemeToggle from './ThemeToggle'
+import Search from './Search'
+import Pagination from './Pagination'
 
 const menuItems = [
   {
@@ -141,14 +136,38 @@ function SidebarContent() {
 
 export default function Layout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
-    // 在组件挂载和更新时重新应用代码高亮
     Prism.highlightAll()
   }, [children])
 
+  // 获取当前页面的前后页面
+  const getCurrentPageInfo = () => {
+    const flattenedItems = [];
+    const flatten = (items) => {
+      items.forEach(item => {
+        if (item.path) {
+          flattenedItems.push(item);
+        }
+        if (item.items) {
+          flatten(item.items);
+        }
+      });
+    };
+    flatten(menuItems);
+
+    const currentIndex = flattenedItems.findIndex(item => item.path === router.asPath);
+    return {
+      prevPage: currentIndex > 0 ? flattenedItems[currentIndex - 1] : null,
+      nextPage: currentIndex < flattenedItems.length - 1 ? flattenedItems[currentIndex + 1] : null
+    };
+  };
+
+  const { prevPage, nextPage } = getCurrentPageInfo();
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="flex h-screen overflow-hidden">
         {/* Mobile sidebar */}
         <div className="lg:hidden">
@@ -174,7 +193,7 @@ export default function Layout({ children }) {
                 leaveFrom="translate-x-0"
                 leaveTo="-translate-x-full"
               >
-                <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white">
+                <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white dark:bg-gray-800">
                   <div className="absolute top-0 right-0 -mr-12 pt-2">
                     <button
                       type="button"
@@ -202,7 +221,7 @@ export default function Layout({ children }) {
 
         {/* Desktop sidebar */}
         <div className="hidden lg:flex lg:flex-shrink-0">
-          <div className="flex flex-col w-64 border-r border-gray-200 bg-white">
+          <div className="flex flex-col w-64 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <div className="flex-1 flex flex-col min-h-0">
               <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
                 <div className="flex items-center flex-shrink-0 px-4">
@@ -218,15 +237,23 @@ export default function Layout({ children }) {
 
         {/* Main content */}
         <div className="flex flex-col w-0 flex-1 overflow-hidden">
-          <div className="relative z-10 flex-shrink-0 flex h-16 bg-white shadow">
+          <div className="relative z-10 flex-shrink-0 flex h-16 bg-white dark:bg-gray-800 shadow">
             <button
               type="button"
-              className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 lg:hidden"
+              className="px-4 border-r border-gray-200 dark:border-gray-700 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 lg:hidden"
               onClick={() => setIsSidebarOpen(true)}
             >
               <span className="sr-only">打开侧边栏</span>
               <Bars3Icon className="h-6 w-6" aria-hidden="true" />
             </button>
+
+            {/* Header tools */}
+            <div className="flex-1 px-4 flex justify-end">
+              <div className="ml-4 flex items-center space-x-4">
+                <Search menuItems={menuItems} />
+                <ThemeToggle />
+              </div>
+            </div>
           </div>
 
           <main className="flex-1 relative overflow-y-auto focus:outline-none">
@@ -239,6 +266,7 @@ export default function Layout({ children }) {
                   transition={{ duration: 0.3 }}
                 >
                   {children}
+                  <Pagination prevPage={prevPage} nextPage={nextPage} />
                 </motion.div>
               </div>
             </div>
