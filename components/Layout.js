@@ -56,13 +56,15 @@ function SidebarContent() {
               {({ open }) => (
                 <>
                   <Disclosure.Button className="w-full flex items-center px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900 group">
-                    <span className="mr-2">{item.icon}</span>
-                    <span className="w-8 text-right mr-2">{item.index}</span>
-                    <span className="flex-1">{item.title}</span>
+                    <div className="flex items-center min-w-[120px]">
+                      <span className="mr-2">{item.icon}</span>
+                      <span className="mr-2">{item.index}</span>
+                      <span>{item.title}</span>
+                    </div>
                     <ChevronRightIcon
                       className={`${
                         open ? 'transform rotate-90' : ''
-                      } w-5 h-5 text-gray-400 transition-transform duration-150 ease-in-out group-hover:text-gray-500`}
+                      } ml-auto w-5 h-5 text-gray-400 transition-transform duration-150 ease-in-out group-hover:text-gray-500`}
                     />
                   </Disclosure.Button>
                   <Disclosure.Panel className="space-y-1">
@@ -76,8 +78,10 @@ function SidebarContent() {
                             : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                         }`}
                       >
-                        <span className="w-8 text-right mr-2">{subItem.index}</span>
-                        <span className="flex-1">{subItem.title}</span>
+                        <div className="flex items-center min-w-[120px]">
+                          <span className="mr-2">{subItem.index}</span>
+                          <span>{subItem.title}</span>
+                        </div>
                       </Link>
                     ))}
                   </Disclosure.Panel>
@@ -93,9 +97,11 @@ function SidebarContent() {
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
-              <span className="mr-2">{item.icon}</span>
-              <span className="w-8 text-right mr-2">{item.index}</span>
-              <span className="flex-1">{item.title}</span>
+              <div className="flex items-center min-w-[120px]">
+                <span className="mr-2">{item.icon}</span>
+                <span className="mr-2">{item.index}</span>
+                <span>{item.title}</span>
+              </div>
             </Link>
           )}
         </div>

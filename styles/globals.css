@@ -73,6 +73,12 @@
   .prose td {
     @apply p-2 border-b border-gray-200 text-gray-700;
   }
+
+  /* 代码注释样式 */
+  .prose code.comment,
+  .prose pre code.comment {
+    @apply text-gray-400;
+  }
 }
 
 /* 自定义滚动条样式 */
