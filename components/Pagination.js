@@ -16,7 +16,7 @@ export default function Pagination({ prevPage, nextPage }) {
           </div>
         </Link>
       ) : (
-        <div /> {/* 占位 */}
+        <div></div>
       )}
 
       {nextPage ? (
@@ -31,7 +31,7 @@ export default function Pagination({ prevPage, nextPage }) {
           <ChevronRightIcon className="h-5 w-5 ml-1" />
         </Link>
       ) : (
-        <div /> {/* 占位 */}
+        <div></div>
       )}
     </div>
   );
