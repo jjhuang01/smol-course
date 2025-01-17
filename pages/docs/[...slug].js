@@ -57,7 +57,21 @@ export default function Doc({ source, frontMatter }) {
             pre: (props) => {
               const isMermaid = props.children?.props?.className === 'language-mermaid';
               if (isMermaid) {
-                return <Mermaid chart={props.children.props.children} />;
+                return (
+                  <div className="my-8">
+                    <Mermaid 
+                      chart={props.children.props.children}
+                      config={{
+                        theme: 'default',
+                        fontSize: 16,
+                        useMaxWidth: false,
+                        width: '100%',
+                        height: '100%',
+                        scale: 1.5
+                      }}
+                    />
+                  </div>
+                );
               }
               return <pre style={{
                 padding: '1em',

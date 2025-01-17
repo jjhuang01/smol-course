@@ -8,7 +8,7 @@ export default function TableOfContents() {
   useEffect(() => {
     const elements = Array.from(document.querySelectorAll('h2, h3, h4'))
       .map(element => ({
-        id: element.id,
+        id: element.id || element.textContent.toLowerCase().replace(/\s+/g, '-'),
         text: element.textContent,
         level: Number(element.tagName.charAt(1)),
       }));
@@ -18,9 +18,10 @@ export default function TableOfContents() {
     // 为没有 id 的标题添加 id
     elements.forEach(heading => {
       if (!document.getElementById(heading.id)) {
-        const element = document.querySelector(`${heading.level}:contains('${heading.text}')`);
+        const element = Array.from(document.querySelectorAll(`h${heading.level}`))
+          .find(el => el.textContent === heading.text);
         if (element) {
-          element.id = heading.text.toLowerCase().replace(/\s+/g, '-');
+          element.id = heading.id;
         }
       }
     });
