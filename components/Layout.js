@@ -1,58 +1,111 @@
 import { useState, useEffect, Fragment } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Disclosure, Transition } from '@headlessui/react'
+import { motion } from 'framer-motion'
+import { Disclosure, Dialog, Transition } from '@headlessui/react'
 import { ChevronRightIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import { Dialog } from '@headlessui/react'
 
 const menuItems = [
   {
     title: '学习指南',
     path: '/docs/学习指南',
     icon: '📚',
+    index: '1',
   },
   {
     title: '项目说明',
     path: '/docs/项目说明',
     icon: '📋',
+    index: '2',
   },
   {
     title: '学习资料',
     icon: '📖',
+    index: '3',
     items: [
-      { title: 'AI关键词详解', path: '/docs/学习资料/AI关键词详解' },
-      { title: 'AI前沿技术详解', path: '/docs/学习资料/AI前沿技术详解' },
-      { title: 'AI实战项目指南', path: '/docs/学习资料/AI实战项目指南' },
-      { title: 'PyTorch深度学习基础', path: '/docs/学习资料/PyTorch深度学习基础' },
-      { title: 'Python数据科学基础', path: '/docs/学习资料/Python数据科学基础' },
-      { title: '统计学详解', path: '/docs/学习资料/统计学详解' },
-      { title: '假设检验详解', path: '/docs/学习资料/假设检验详解' },
+      { title: 'AI关键词详解', path: '/docs/学习资料/AI关键词详解', index: '3.1' },
+      { title: 'AI前沿技术详解', path: '/docs/学习资料/AI前沿技术详解', index: '3.2' },
+      { title: 'AI实战项目指南', path: '/docs/学习资料/AI实战项目指南', index: '3.3' },
+      { title: 'PyTorch深度学习基础', path: '/docs/学习资料/PyTorch深度学习基础', index: '3.4' },
+      { title: 'Python数据科学基础', path: '/docs/学习资料/Python数据科学基础', index: '3.5' },
+      { title: '统计学详解', path: '/docs/学习资料/统计学详解', index: '3.6' },
+      { title: '假设检验详解', path: '/docs/学习资料/假设检验详解', index: '3.7' },
     ]
   },
   {
     title: '练习日志',
     icon: '📝',
+    index: '4',
     items: [
-      { title: '代码问题解决方案', path: '/docs/练习日志/解决方案/代码问题解决方案' },
-      { title: '模型问题解决方案', path: '/docs/练习日志/解决方案/模型问题解决方案' },
-      { title: '环境问题解决方案', path: '/docs/练习日志/解决方案/环境问题解决方案' },
+      { title: '代码问题解决方案', path: '/docs/练习日志/解决方案/代码问题解决方案', index: '4.1' },
+      { title: '模型问题解决方案', path: '/docs/练习日志/解决方案/模型问题解决方案', index: '4.2' },
+      { title: '环境问题解决方案', path: '/docs/练习日志/解决方案/环境问题解决方案', index: '4.3' },
     ]
   }
 ]
 
-export default function Layout({ children }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+function SidebarContent() {
   const router = useRouter()
-  const [mounted, setMounted] = useState(false)
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  return (
+    <nav className="mt-5 flex-1 px-2 space-y-1" aria-label="Sidebar">
+      {menuItems.map((item) => (
+        <div key={item.title} className="space-y-1">
+          {item.items ? (
+            <Disclosure defaultOpen={item.items.some(subItem => router.asPath === subItem.path)}>
+              {({ open }) => (
+                <>
+                  <Disclosure.Button className="w-full flex items-center px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900 group">
+                    <span className="mr-2">{item.icon}</span>
+                    <span className="w-8 text-right mr-2">{item.index}</span>
+                    <span className="flex-1">{item.title}</span>
+                    <ChevronRightIcon
+                      className={`${
+                        open ? 'transform rotate-90' : ''
+                      } w-5 h-5 text-gray-400 transition-transform duration-150 ease-in-out group-hover:text-gray-500`}
+                    />
+                  </Disclosure.Button>
+                  <Disclosure.Panel className="space-y-1">
+                    {item.items.map((subItem) => (
+                      <Link
+                        key={subItem.path}
+                        href={subItem.path}
+                        className={`group flex items-center pl-12 pr-2 py-2 text-sm font-medium rounded-md ${
+                          router.asPath === subItem.path
+                            ? 'text-primary-600 bg-primary-50'
+                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                        }`}
+                      >
+                        <span className="w-8 text-right mr-2">{subItem.index}</span>
+                        <span className="flex-1">{subItem.title}</span>
+                      </Link>
+                    ))}
+                  </Disclosure.Panel>
+                </>
+              )}
+            </Disclosure>
+          ) : (
+            <Link
+              href={item.path}
+              className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
+                router.asPath === item.path
+                  ? 'text-primary-600 bg-primary-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              <span className="mr-2">{item.icon}</span>
+              <span className="w-8 text-right mr-2">{item.index}</span>
+              <span className="flex-1">{item.title}</span>
+            </Link>
+          )}
+        </div>
+      ))}
+    </nav>
+  )
+}
 
-  if (!mounted) {
-    return null
-  }
+export default function Layout({ children }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -153,62 +206,5 @@ export default function Layout({ children }) {
         </div>
       </div>
     </div>
-  )
-}
-
-function SidebarContent() {
-  const router = useRouter()
-
-  return (
-    <nav className="mt-5 flex-1 px-2 space-y-1" aria-label="Sidebar">
-      {menuItems.map((item) => (
-        <div key={item.title} className="space-y-1">
-          {item.items ? (
-            <Disclosure defaultOpen={item.items.some(subItem => router.asPath === subItem.path)}>
-              {({ open }) => (
-                <>
-                  <Disclosure.Button className="w-full flex items-center px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900 group">
-                    <span className="mr-2">{item.icon}</span>
-                    <span className="flex-1">{item.title}</span>
-                    <ChevronRightIcon
-                      className={`${
-                        open ? 'transform rotate-90' : ''
-                      } w-5 h-5 text-gray-400 transition-transform duration-150 ease-in-out group-hover:text-gray-500`}
-                    />
-                  </Disclosure.Button>
-                  <Disclosure.Panel className="space-y-1">
-                    {item.items.map((subItem) => (
-                      <Link
-                        key={subItem.path}
-                        href={subItem.path}
-                        className={`group flex items-center pl-10 pr-2 py-2 text-sm font-medium rounded-md ${
-                          router.asPath === subItem.path
-                            ? 'text-primary-600 bg-primary-50'
-                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                        }`}
-                      >
-                        {subItem.title}
-                      </Link>
-                    ))}
-                  </Disclosure.Panel>
-                </>
-              )}
-            </Disclosure>
-          ) : (
-            <Link
-              href={item.path}
-              className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                router.asPath === item.path
-                  ? 'text-primary-600 bg-primary-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              <span className="mr-2">{item.icon}</span>
-              {item.title}
-            </Link>
-          )}
-        </div>
-      ))}
-    </nav>
   )
 } 
