@@ -6,6 +6,7 @@ import { MDXRemote } from 'next-mdx-remote'
 import CodeBlock from '../../components/CodeBlock'
 import Mermaid from '../../components/Mermaid'
 import Image from 'next/image'
+import rehypePrism from 'rehype-prism-plus'
 import 'prismjs/themes/prism-tomorrow.css'
 import 'prismjs/components/prism-python'
 import 'prismjs/components/prism-bash'
@@ -228,7 +229,13 @@ export async function getStaticProps({ params }) {
   const filePath = path.join(process.cwd(), 'docs', `${slug}.md`)
   const source = fs.readFileSync(filePath, 'utf8')
   const { content, data } = matter(source)
-  const mdxSource = await serialize(content)
+  const mdxSource = await serialize(content, {
+    mdxOptions: {
+      rehypePlugins: [
+        [rehypePrism, { showLineNumbers: true }]
+      ],
+    },
+  })
 
   return {
     props: {
