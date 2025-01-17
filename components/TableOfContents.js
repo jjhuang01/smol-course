@@ -8,11 +8,16 @@ export default function TableOfContents() {
 
   useEffect(() => {
     const elements = Array.from(document.querySelectorAll('h2, h3, h4'))
-      .map(element => ({
-        id: element.id || element.textContent.toLowerCase().replace(/\s+/g, '-'),
-        text: element.textContent,
-        level: Number(element.tagName.charAt(1)),
-      }));
+      .filter(element => element && element.textContent)
+      .map(element => {
+        const text = element.textContent.trim();
+        return {
+          id: element.id || text.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          text,
+          level: Number(element.tagName.charAt(1)),
+        };
+      })
+      .filter(heading => heading.id && heading.text);
     
     setHeadings(elements);
 
@@ -20,7 +25,7 @@ export default function TableOfContents() {
     elements.forEach(heading => {
       if (!document.getElementById(heading.id)) {
         const element = Array.from(document.querySelectorAll(`h${heading.level}`))
-          .find(el => el.textContent === heading.text);
+          .find(el => el.textContent.trim() === heading.text);
         if (element) {
           element.id = heading.id;
         }
@@ -30,7 +35,7 @@ export default function TableOfContents() {
     const observer = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {
-          if (entry.isIntersecting) {
+          if (entry.isIntersecting && entry.target.id) {
             setActiveId(entry.target.id);
           }
         });
@@ -70,7 +75,7 @@ export default function TableOfContents() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  if (headings.length === 0) return null;
+  if (!headings || headings.length === 0) return null;
 
   return (
     <>
@@ -90,9 +95,9 @@ export default function TableOfContents() {
               )}
             </button>
           </div>
-          {isExpanded && (
+          {isExpanded && headings.length > 0 && (
             <ul className="space-y-2">
-              {headings.map(heading => (
+              {headings.map(heading => heading && (
                 <li
                   key={heading.id}
                   style={{ paddingLeft: `${(heading.level - 2) * 1}rem` }}
