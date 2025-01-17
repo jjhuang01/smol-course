@@ -4,6 +4,15 @@ import { useRouter } from 'next/router'
 import { motion } from 'framer-motion'
 import { Disclosure, Dialog, Transition } from '@headlessui/react'
 import { ChevronRightIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import Prism from 'prismjs'
+import 'prismjs/themes/prism-tomorrow.css'
+import 'prismjs/components/prism-python'
+import 'prismjs/components/prism-bash'
+import 'prismjs/components/prism-javascript'
+import 'prismjs/components/prism-jsx'
+import 'prismjs/components/prism-typescript'
+import 'prismjs/components/prism-json'
+import 'prismjs/components/prism-markdown'
 
 const menuItems = [
   {
@@ -112,6 +121,11 @@ function SidebarContent() {
 
 export default function Layout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  useEffect(() => {
+    // 在组件挂载和更新时重新应用代码高亮
+    Prism.highlightAll()
+  }, [children])
 
   return (
     <div className="min-h-screen bg-gray-50">

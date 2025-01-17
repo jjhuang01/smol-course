@@ -53,6 +53,77 @@
   .prose pre code {
     @apply bg-transparent text-gray-200 p-0;
   }
+
+  /* 代码语法高亮 */
+  .prose pre code {
+    @apply text-gray-200;
+  }
+
+  .prose pre code .comment,
+  .prose pre code .prolog,
+  .prose pre code .doctype,
+  .prose pre code .cdata {
+    @apply text-gray-500;
+  }
+
+  .prose pre code .string,
+  .prose pre code .attr-value {
+    @apply text-green-400;
+  }
+
+  .prose pre code .function,
+  .prose pre code .class-name {
+    @apply text-yellow-300;
+  }
+
+  .prose pre code .keyword,
+  .prose pre code .rule,
+  .prose pre code .operator {
+    @apply text-purple-400;
+  }
+
+  .prose pre code .number,
+  .prose pre code .boolean {
+    @apply text-blue-300;
+  }
+
+  .prose pre code .property,
+  .prose pre code .attr-name {
+    @apply text-blue-400;
+  }
+
+  .prose pre code .punctuation {
+    @apply text-gray-400;
+  }
+
+  .prose pre code .parameter {
+    @apply text-orange-300;
+  }
+
+  /* Python 特定语法 */
+  .prose pre code .python-string {
+    @apply text-green-400;
+  }
+
+  .prose pre code .python-comment {
+    @apply text-gray-500;
+  }
+
+  .prose pre code .python-keyword {
+    @apply text-purple-400;
+  }
+
+  .prose pre code .python-function {
+    @apply text-yellow-300;
+  }
+
+  .prose pre code .python-number {
+    @apply text-blue-300;
+  }
+
+  .prose pre code .python-import {
+    @apply text-pink-400;
+  }
   
   .prose a {
     @apply text-primary-600 hover:text-primary-700 transition-colors duration-200;
@@ -72,12 +143,6 @@
   
   .prose td {
     @apply p-2 border-b border-gray-200 text-gray-700;
-  }
-
-  /* 代码注释样式 */
-  .prose code.comment,
-  .prose pre code.comment {
-    @apply text-gray-400;
   }
 }
 
