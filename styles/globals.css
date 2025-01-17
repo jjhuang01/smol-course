@@ -14,16 +14,19 @@
 
   /* 基础代码样式 */
   code {
-    @apply px-2 py-1 rounded text-sm text-gray-800 bg-gray-100;
+    @apply px-2 py-1 rounded text-sm;
+    background: transparent;
   }
 
   pre {
-    @apply p-4 rounded-lg overflow-x-auto mb-6 bg-gray-800;
+    @apply p-4 rounded-lg overflow-x-auto mb-6;
+    background: transparent;
     margin: 0;
   }
 
   pre code {
-    @apply p-0 bg-transparent text-gray-100;
+    @apply p-0;
+    background: transparent;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   }
 }
@@ -58,15 +61,18 @@
   }
   
   .prose code {
-    @apply px-2 py-1 rounded text-sm text-gray-800 bg-gray-100;
+    @apply px-2 py-1 rounded text-sm;
+    background: transparent;
   }
   
   .prose pre {
-    @apply p-4 rounded-lg overflow-x-auto mb-6 bg-gray-900;
+    @apply p-4 rounded-lg overflow-x-auto mb-6;
+    background: transparent;
   }
   
   .prose pre code {
-    @apply text-gray-200 p-0 bg-transparent;
+    @apply p-0;
+    background: transparent;
   }
 
   /* 代码语法高亮 */
