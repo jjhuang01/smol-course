@@ -1,4 +1,7 @@
-module.exports = {
+const withMDX = require('@next/mdx')()
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   // 启用 MDX 支持
   pageExtensions: ['js', 'jsx', 'md', 'mdx'],
   
@@ -13,4 +16,6 @@ module.exports = {
     domains: ['localhost'],
     unoptimized: true
   }
-} 
+}
+
+module.exports = withMDX(nextConfig) 
