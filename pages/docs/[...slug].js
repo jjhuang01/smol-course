@@ -48,7 +48,6 @@ export default function Doc({ source, frontMatter }) {
             ul: (props) => <ul style={{ margin: '1.25em 0', paddingLeft: '1.625em' }} {...props} />,
             li: (props) => <li style={{ margin: '0.5em 0' }} {...props} />,
             code: (props) => <code style={{
-              backgroundColor: '#f3f4f6',
               padding: '0.2em 0.4em',
               borderRadius: '0.25em',
               fontSize: '0.875em',
