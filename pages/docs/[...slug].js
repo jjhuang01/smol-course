@@ -16,6 +16,7 @@ import 'prismjs/components/prism-typescript'
 import 'prismjs/components/prism-json'
 import 'prismjs/components/prism-markdown'
 import remarkGfm from 'remark-gfm'
+import { visit } from 'unist-util-visit'
 
 const proseStyles = {
   color: 'var(--tw-prose-body)',
@@ -338,6 +339,20 @@ export async function getStaticPaths() {
   }
 }
 
+// Add custom plugin to handle table context
+function remarkTableContext() {
+  return (tree) => {
+    let inTable = false
+    visit(tree, (node) => {
+      if (node.type === 'table') {
+        inTable = true
+        return visit.SKIP
+      }
+    })
+    return tree
+  }
+}
+
 export async function getStaticProps({ params }) {
   const slug = params.slug.join('/')
   const filePath = path.join(process.cwd(), 'docs', `${slug}.md`)
@@ -347,6 +362,7 @@ export async function getStaticProps({ params }) {
   const mdxSource = await serialize(content, {
     mdxOptions: {
       remarkPlugins: [
+        remarkTableContext,
         [remarkGfm, {
           singleTilde: false,
           tableCellPadding: true,
@@ -363,10 +379,7 @@ export async function getStaticProps({ params }) {
       format: 'mdx',
       development: process.env.NODE_ENV === 'development'
     },
-    scope: {
-      // Remove table configuration from scope as it's not needed
-    },
-    parseFrontmatter: true,
+    parseFrontmatter: true
   })
 
   return {
