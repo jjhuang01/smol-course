@@ -1,112 +1,165 @@
 import Link from 'next/link'
-import { motion } from 'framer-motion'
-
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-}
-
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 }
-}
 
 export default function Home() {
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <motion.div
-        initial="hidden"
-        animate="show"
-        variants={container}
-        className="max-w-4xl w-full space-y-8"
-      >
-        <motion.div variants={item} className="text-center">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">
-            SMOL Course
-          </h1>
-          <p className="mt-6 text-xl text-gray-600">
-            欢迎来到 SMOL Course 学习平台
-          </p>
-        </motion.div>
-
-        <motion.div
-          variants={item}
-          className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2"
-        >
-          <Link
-            href="/docs/学习指南"
-            className="group relative rounded-xl border border-gray-200 p-6 bg-white shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
-          >
-            <div className="flex items-center space-x-4">
-              <div className="flex-shrink-0">
-                <span className="text-3xl">📚</span>
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 group-hover:text-primary-600">
-                  学习指南
-                </h2>
-                <p className="mt-2 text-gray-600">开始您的学习之旅</p>
-              </div>
+    <div className="container">
+      <main className="main">
+        <h1 className="title">SMOL Course</h1>
+        <p className="description">欢迎来到 SMOL Course 学习平台</p>
+        <div className="grid">
+          <Link href="/docs/学习指南" className="card">
+            <div className="card-content">
+              <h2>📚 学习指南 &rarr;</h2>
+              <p>开始您的学习之旅</p>
             </div>
           </Link>
-
-          <Link
-            href="/docs/项目说明"
-            className="group relative rounded-xl border border-gray-200 p-6 bg-white shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
-          >
-            <div className="flex items-center space-x-4">
-              <div className="flex-shrink-0">
-                <span className="text-3xl">📋</span>
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 group-hover:text-primary-600">
-                  项目说明
-                </h2>
-                <p className="mt-2 text-gray-600">了解项目详情</p>
-              </div>
+          <Link href="/docs/项目说明" className="card">
+            <div className="card-content">
+              <h2>📋 项目说明 &rarr;</h2>
+              <p>了解项目详情</p>
             </div>
           </Link>
-
-          <Link
-            href="/docs/学习资料/AI关键词详解"
-            className="group relative rounded-xl border border-gray-200 p-6 bg-white shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
-          >
-            <div className="flex items-center space-x-4">
-              <div className="flex-shrink-0">
-                <span className="text-3xl">📖</span>
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 group-hover:text-primary-600">
-                  学习资料
-                </h2>
-                <p className="mt-2 text-gray-600">浏览完整的学习资料</p>
-              </div>
+          <Link href="/docs/学习资料/AI关键词详解" className="card">
+            <div className="card-content">
+              <h2>📖 学习资料 &rarr;</h2>
+              <p>浏览完整的学习资料</p>
             </div>
           </Link>
-
-          <Link
-            href="/docs/练习日志/解决方案/代码问题解决方案"
-            className="group relative rounded-xl border border-gray-200 p-6 bg-white shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
-          >
-            <div className="flex items-center space-x-4">
-              <div className="flex-shrink-0">
-                <span className="text-3xl">📝</span>
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 group-hover:text-primary-600">
-                  练习日志
-                </h2>
-                <p className="mt-2 text-gray-600">查看问题解决方案</p>
-              </div>
+          <Link href="/docs/练习日志/解决方案/代码问题解决方案" className="card">
+            <div className="card-content">
+              <h2>📝 练习日志 &rarr;</h2>
+              <p>查看问题解决方案</p>
             </div>
           </Link>
-        </motion.div>
-      </motion.div>
+        </div>
+      </main>
+
+      <style jsx>{`
+        .container {
+          min-height: 100vh;
+          padding: 0 0.5rem;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          background-color: var(--bg-color);
+          color: var(--text-color);
+        }
+
+        .main {
+          padding: 4rem 0;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          max-width: 1200px;
+          width: 100%;
+        }
+
+        .title {
+          margin: 0;
+          line-height: 1.15;
+          font-size: 4rem;
+          text-align: center;
+          background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          font-weight: bold;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .description {
+          margin: 2rem 0;
+          line-height: 1.5;
+          font-size: 1.5rem;
+          text-align: center;
+          color: var(--text-secondary);
+        }
+
+        .grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(300px, 1fr));
+          gap: 2rem;
+          max-width: 1000px;
+          margin-top: 3rem;
+          width: 100%;
+          padding: 0 1rem;
+        }
+
+        .card {
+          text-decoration: none;
+          color: inherit;
+        }
+
+        .card-content {
+          padding: 1.5rem;
+          border-radius: 10px;
+          background: var(--card-bg);
+          border: 1px solid var(--border-color);
+          transition: all 0.3s ease;
+          height: 100%;
+        }
+
+        .card:hover .card-content {
+          transform: translateY(-5px);
+          box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+          border-color: var(--primary-color);
+        }
+
+        .card h2 {
+          margin: 0 0 1rem 0;
+          font-size: 1.5rem;
+          color: var(--heading-color);
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .card p {
+          margin: 0;
+          font-size: 1.1rem;
+          line-height: 1.5;
+          color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+          .title {
+            font-size: 3rem;
+          }
+
+          .grid {
+            grid-template-columns: 1fr;
+            margin: 3rem 1rem;
+          }
+
+          .card {
+            margin: 1rem 0;
+          }
+        }
+
+        :root {
+          --primary-color: #0070f3;
+          --secondary-color: #00a6ed;
+          --bg-color: #ffffff;
+          --text-color: #1a202c;
+          --text-secondary: #4a5568;
+          --heading-color: #2d3748;
+          --card-bg: #ffffff;
+          --border-color: #e2e8f0;
+        }
+
+        :global(.dark) {
+          --primary-color: #60a5fa;
+          --secondary-color: #3b82f6;
+          --bg-color: #1a202c;
+          --text-color: #f7fafc;
+          --text-secondary: #e2e8f0;
+          --heading-color: #f7fafc;
+          --card-bg: #2d3748;
+          --border-color: #4a5568;
+        }
+      `}</style>
     </div>
   )
 } 
