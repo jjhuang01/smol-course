@@ -339,20 +339,6 @@ export async function getStaticPaths() {
   }
 }
 
-// Add custom plugin to handle table context
-function remarkTableContext() {
-  return (tree) => {
-    let inTable = false
-    visit(tree, (node) => {
-      if (node.type === 'table') {
-        inTable = true
-        return visit.SKIP
-      }
-    })
-    return tree
-  }
-}
-
 export async function getStaticProps({ params }) {
   const slug = params.slug.join('/')
   const filePath = path.join(process.cwd(), 'docs', `${slug}.md`)
@@ -362,24 +348,16 @@ export async function getStaticProps({ params }) {
   const mdxSource = await serialize(content, {
     mdxOptions: {
       remarkPlugins: [
-        remarkTableContext,
-        [remarkGfm, {
-          singleTilde: false,
-          tableCellPadding: true,
-          tablePipeAlign: false,
-          stringLength: str => str.length
-        }]
+        remarkGfm
       ],
       rehypePlugins: [
         [rehypePrism, { 
           showLineNumbers: true,
           ignoreMissing: true 
         }]
-      ],
-      format: 'mdx',
-      development: process.env.NODE_ENV === 'development'
+      ]
     },
-    parseFrontmatter: true
+    scope: data
   })
 
   return {
