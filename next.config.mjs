@@ -1,11 +1,21 @@
 import createMDX from '@next/mdx';
+import rehypePrism from 'rehype-prism-plus';
+import remarkGfm from 'remark-gfm';
 
 const withMDX = createMDX({
   extension: /\.mdx?$/,
   options: {
-    remarkPlugins: [],
+    remarkPlugins: [remarkGfm],
     rehypePlugins: [
-      ['rehype-prism-plus', { showLineNumbers: true }]
+      [rehypePrism, { 
+        showLineNumbers: true, 
+        ignoreMissing: true,
+        aliases: {
+          text: 'plaintext',
+          sh: 'bash',
+          js: 'javascript'
+        }
+      }]
     ],
   },
 })
@@ -22,10 +32,19 @@ const nextConfig = {
 
   // 确保 Mermaid 组件在客户端渲染
   webpack: (config) => {
+    // 添加 mermaid 支持
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
     };
+    
+    // 支持更多语言的语法高亮
+    config.module.rules.push({
+      test: /\.mjs$/,
+      include: /node_modules/,
+      type: 'javascript/auto',
+    });
+    
     return config;
   },
 }

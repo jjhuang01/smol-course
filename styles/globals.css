@@ -277,26 +277,50 @@
 }
 
 .mermaid {
-  @apply bg-white rounded-lg p-4 shadow-sm;
-  min-width: 300px;
+  @apply bg-transparent;
+}
+
+.mermaid svg {
+  @apply max-w-full h-auto;
 }
 
 .mermaid .actor {
-  @apply fill-white stroke-gray-600 stroke-2;
+  @apply fill-gray-900 dark:fill-gray-100 stroke-gray-600 dark:stroke-gray-400;
 }
 
-.mermaid .messageText {
-  @apply fill-gray-700 font-medium;
+.mermaid .actor-line {
+  @apply stroke-gray-600 dark:stroke-gray-400;
 }
 
-.mermaid .messageLine0 {
-  @apply stroke-gray-500 stroke-2;
+.mermaid .messageLine0,
+.mermaid .messageLine1 {
+  @apply stroke-blue-500 dark:stroke-blue-400 stroke-[1.5];
 }
 
-.mermaid .labelBox {
-  @apply fill-blue-50 stroke-blue-500;
+.mermaid .messageText,
+.mermaid .actor-text {
+  @apply fill-gray-900 dark:fill-gray-100 font-mono;
 }
 
-.mermaid .labelText {
-  @apply fill-blue-700;
+.mermaid .loopText,
+.mermaid .loopLine {
+  @apply fill-gray-900 dark:fill-gray-100 stroke-gray-600 dark:stroke-gray-400;
+}
+
+.mermaid #arrowhead path {
+  @apply fill-blue-500 dark:fill-blue-400 stroke-blue-500 dark:stroke-blue-400;
+}
+
+.mermaid .note {
+  @apply fill-gray-100 dark:fill-gray-800 stroke-gray-400 dark:stroke-gray-600;
+}
+
+.mermaid .noteText {
+  @apply fill-gray-900 dark:fill-gray-100;
+}
+
+.mermaid .activation0,
+.mermaid .activation1,
+.mermaid .activation2 {
+  @apply fill-gray-100 dark:fill-gray-800;
 } 

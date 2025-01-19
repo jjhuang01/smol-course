@@ -15,6 +15,7 @@ import 'prismjs/components/prism-jsx'
 import 'prismjs/components/prism-typescript'
 import 'prismjs/components/prism-json'
 import 'prismjs/components/prism-markdown'
+import remarkGfm from 'remark-gfm'
 
 const proseStyles = {
   color: 'var(--tw-prose-body)',
@@ -61,6 +62,159 @@ const headingStyles = {
 }
 
 export default function Doc({ source, frontMatter }) {
+  const components = {
+    h1: (props) => <h1 style={headingStyles.h1} {...props} />,
+    h2: (props) => <h2 style={headingStyles.h2} {...props} />,
+    h3: (props) => <h3 style={headingStyles.h3} {...props} />,
+    p: (props) => <p style={{ margin: '1.25em 0' }} {...props} />,
+    ul: (props) => <ul style={{ margin: '1.25em 0', paddingLeft: '1.625em' }} {...props} />,
+    li: (props) => <li style={{ margin: '0.5em 0' }} {...props} />,
+    img: (props) => (
+      <div style={{ position: 'relative', width: '100%', height: 'auto', margin: '2rem 0' }}>
+        <Image
+          {...props}
+          width={800}
+          height={450}
+          style={{ maxWidth: '100%', height: 'auto' }}
+          alt={props.alt || ''}
+        />
+      </div>
+    ),
+    code: CodeBlock,
+    pre: (props) => {
+      if (props.children?.props?.className?.includes('language-mermaid')) {
+        let chart = props.children.props.children;
+        
+        // 调试信息
+        console.log('Original chart content:', chart);
+        
+        // 提取 Mermaid 图表内容
+        const extractMermaidContent = (node) => {
+          if (typeof node === 'string') return node;
+          if (Array.isArray(node)) {
+            return node.map(item => {
+              if (item.props?.children) {
+                // 如果是带行号的代码行，提取实际内容
+                const content = Array.isArray(item.props.children) 
+                  ? item.props.children.map(child => 
+                      typeof child === 'string' ? child : 
+                      child.props?.children || ''
+                    ).join('')
+                  : item.props.children;
+                return content;
+              }
+              return '';
+            }).join('');
+          }
+          if (node?.props?.children) return extractMermaidContent(node.props.children);
+          return '';
+        };
+
+        const chartContent = extractMermaidContent(chart)
+          .replace(/\\n/g, '\n')
+          .replace(/\\t/g, '\t')
+          .replace(/\[object Object\]/g, '')
+          .trim();
+        
+        console.log('Extracted chart content:', chartContent);
+        
+        // 验证图表内容
+        if (!chartContent || chartContent.length === 0) {
+          console.warn('Empty chart content detected');
+          return null;
+        }
+
+        // 验证是否包含有效的 Mermaid 语法
+        if (!chartContent.includes('sequenceDiagram') && 
+            !chartContent.includes('graph') && 
+            !chartContent.includes('gantt') && 
+            !chartContent.includes('classDiagram') && 
+            !chartContent.includes('stateDiagram')) {
+          console.warn('Invalid Mermaid syntax detected:', chartContent);
+          return (
+            <div className="bg-red-50 dark:bg-red-900 p-4 rounded-lg">
+              <p className="text-red-600 dark:text-red-200">无效的 Mermaid 图表语法</p>
+              <pre className="mt-2 text-sm bg-white dark:bg-gray-800 p-2 rounded">{chartContent}</pre>
+            </div>
+          );
+        }
+
+        return (
+          <div className="mermaid-wrapper">
+            <Mermaid 
+              chart={chartContent}
+              config={{
+                theme: 'dark',
+                sequence: {
+                  diagramMarginX: 50,
+                  diagramMarginY: 10,
+                  actorMargin: 100,
+                  width: 150,
+                  height: 65,
+                  boxMargin: 10,
+                  boxTextMargin: 5,
+                  noteMargin: 10,
+                  messageMargin: 35,
+                  mirrorActors: false,
+                  bottomMarginAdj: 1,
+                  useMaxWidth: true,
+                },
+                themeVariables: {
+                  sequenceNumberColor: '#60a5fa',
+                  actorBorder: '#4b5563',
+                  actorBkg: '#1f2937',
+                  actorTextColor: '#e2e8f0',
+                  actorLineColor: '#6b7280',
+                  signalColor: '#60a5fa',
+                  signalTextColor: '#e2e8f0',
+                  labelBoxBkgColor: '#1f2937',
+                  labelBoxBorderColor: '#4b5563',
+                  labelTextColor: '#e2e8f0',
+                  loopTextColor: '#e2e8f0',
+                  noteBkgColor: '#374151',
+                  noteBorderColor: '#4b5563',
+                  noteTextColor: '#e2e8f0',
+                  activationBkgColor: '#1f2937',
+                  sequenceDiagramTitleColor: '#e2e8f0',
+                }
+              }}
+            />
+          </div>
+        );
+      }
+      
+      if (props.children?.props) {
+        const { children, className } = props.children.props;
+        
+        let codeContent = '';
+        const extractText = (node) => {
+          if (typeof node === 'string') return node;
+          if (Array.isArray(node)) return node.map(extractText).join('');
+          if (node?.props?.children) return extractText(node.props.children);
+          return '';
+        };
+        
+        codeContent = extractText(children);
+        
+        codeContent = codeContent
+          .replace(/\[object Object\]/g, '')
+          .replace(/\\n/g, '\n')
+          .replace(/\\t/g, '\t')
+          .trim();
+        
+        return (
+          <div className="code-block-wrapper">
+            <CodeBlock className={className}>
+              {codeContent}
+            </CodeBlock>
+          </div>
+        );
+      }
+      
+      return <pre {...props} />;
+    },
+  }
+
   return (
     <div className="prose-wrapper" style={{
       maxWidth: '65ch',
@@ -163,48 +317,7 @@ export default function Doc({ source, frontMatter }) {
       `}</style>
       <main>
         <article style={proseStyles}>
-          <MDXRemote {...source} components={{
-            h1: (props) => <h1 style={headingStyles.h1} {...props} />,
-            h2: (props) => <h2 style={headingStyles.h2} {...props} />,
-            h3: (props) => <h3 style={headingStyles.h3} {...props} />,
-            p: (props) => <p style={{ margin: '1.25em 0' }} {...props} />,
-            ul: (props) => <ul style={{ margin: '1.25em 0', paddingLeft: '1.625em' }} {...props} />,
-            li: (props) => <li style={{ margin: '0.5em 0' }} {...props} />,
-            img: (props) => (
-              <div style={{ position: 'relative', width: '100%', height: 'auto', margin: '2rem 0' }}>
-                <Image
-                  {...props}
-                  width={800}
-                  height={450}
-                  style={{ maxWidth: '100%', height: 'auto' }}
-                  alt={props.alt || ''}
-                />
-              </div>
-            ),
-            code: CodeBlock,
-            pre: (props) => {
-              const isMermaid = props.children?.props?.className === 'language-mermaid';
-              if (isMermaid) {
-                const chart = props.children.props.children;
-                return (
-                  <div className="my-8">
-                    <Mermaid 
-                      chart={chart}
-                      config={{
-                        theme: 'dark',
-                        fontSize: 16,
-                        useMaxWidth: false,
-                        width: '100%',
-                        height: '100%',
-                        scale: 1.5
-                      }}
-                    />
-                  </div>
-                );
-              }
-              return <div className="code-block-wrapper"><CodeBlock {...props.children.props} /></div>;
-            },
-          }} />
+          <MDXRemote {...source} components={components} />
         </article>
       </main>
     </div>
@@ -230,12 +343,30 @@ export async function getStaticProps({ params }) {
   const filePath = path.join(process.cwd(), 'docs', `${slug}.md`)
   const source = fs.readFileSync(filePath, 'utf8')
   const { content, data } = matter(source)
+  
   const mdxSource = await serialize(content, {
     mdxOptions: {
-      rehypePlugins: [
-        [rehypePrism, { showLineNumbers: true }]
+      remarkPlugins: [
+        [remarkGfm, {
+          singleTilde: false,
+          tableCellPadding: true,
+          tablePipeAlign: false,
+          stringLength: str => str.length
+        }]
       ],
+      rehypePlugins: [
+        [rehypePrism, { 
+          showLineNumbers: true,
+          ignoreMissing: true 
+        }]
+      ],
+      format: 'mdx',
+      development: process.env.NODE_ENV === 'development'
     },
+    scope: {
+      // Remove table configuration from scope as it's not needed
+    },
+    parseFrontmatter: true,
   })
 
   return {

@@ -201,6 +201,15 @@ export default function Layout({ children }) {
 
     // 解码当前路径进行比较
     const currentPath = decodeURIComponent(router.asPath);
+    
+    // 如果是根路径，返回第一个页面作为下一页
+    if (currentPath === '/') {
+      return {
+        prevPage: null,
+        nextPage: flattenedItems[0]
+      };
+    }
+    
     const currentIndex = flattenedItems.findIndex(item => decodeURIComponent(item.path) === currentPath);
     
     // 确保找到了当前页面
