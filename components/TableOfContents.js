@@ -5,80 +5,99 @@ export default function TableOfContents() {
   const [headings, setHeadings] = useState([]);
   const [activeId, setActiveId] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    const elements = Array.from(document.querySelectorAll('h2, h3, h4'))
-      .filter(element => element && element.textContent)
-      .map(element => {
-        const text = element.textContent.trim();
-        // 生成一个更简单的 ID
-        const id = text
-          .toLowerCase()
-          .replace(/\s+/g, '-')
-          .replace(/[^a-z0-9-\u4e00-\u9fa5]/g, '');
-        
-        // 设置元素的 ID
-        element.id = element.id || id;
-        
-        return {
-          id: element.id,
-          text,
-          level: Number(element.tagName.charAt(1)),
-        };
-      })
-      .filter(heading => heading.id && heading.text);
-    
-    setHeadings(elements);
-
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting && entry.target.id) {
-            setActiveId(entry.target.id);
-          }
-        });
-      },
-      { 
-        rootMargin: '-20% 0% -35% 0%',
-        threshold: 0.5
-      }
-    );
-
-    elements.forEach(heading => {
-      const element = document.getElementById(heading.id);
-      if (element) {
-        observer.observe(element);
-      }
-    });
-
-    return () => observer.disconnect();
+    setIsMounted(true);
+    return () => setIsMounted(false);
   }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
+    try {
+      const elements = Array.from(document.querySelectorAll('h2, h3, h4') || [])
+        .filter(element => element && element.textContent)
+        .map(element => {
+          const text = element.textContent.trim();
+          // 生成一个更简单的 ID
+          const id = text
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9-\u4e00-\u9fa5]/g, '');
+          
+          // 设置元素的 ID
+          element.id = element.id || id;
+          
+          return {
+            id: element.id,
+            text,
+            level: Number(element.tagName.charAt(1)),
+          };
+        })
+        .filter(heading => heading.id && heading.text);
+      
+      setHeadings(elements);
+
+      const observer = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting && entry.target.id) {
+              setActiveId(entry.target.id);
+            }
+          });
+        },
+        { 
+          rootMargin: '-20% 0% -35% 0%',
+          threshold: 0.5
+        }
+      );
+
+      elements.forEach(heading => {
+        const element = document.getElementById(heading.id);
+        if (element) {
+          observer.observe(element);
+        }
+      });
+
+      return () => observer.disconnect();
+    } catch (error) {
+      console.error('Error in TableOfContents:', error);
+      return () => {};
+    }
+  }, [isMounted]);
 
   const [showBackToTop, setShowBackToTop] = useState(false);
 
   useEffect(() => {
+    if (!isMounted) return;
+
     const handleScroll = () => {
       setShowBackToTop(window.scrollY > 300);
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isMounted]);
 
   const scrollToHeading = (id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      const offset = 100; // 顶部偏移量
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = element.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
-      const offsetPosition = elementPosition - offset;
+    try {
+      const element = document.getElementById(id);
+      if (element) {
+        const offset = 100; // 顶部偏移量
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = element.getBoundingClientRect().top;
+        const elementPosition = elementRect - bodyRect;
+        const offsetPosition = elementPosition - offset;
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-      setActiveId(id);
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+        setActiveId(id);
+      }
+    } catch (error) {
+      console.error('Error scrolling to heading:', error);
     }
   };
 
@@ -91,7 +110,12 @@ export default function TableOfContents() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  if (!headings || headings.length === 0) return null;
+  // 在移动端不显示目录
+  if (typeof window !== 'undefined' && window.innerWidth < 1280) {
+    return null;
+  }
+
+  if (!isMounted || !headings || headings.length === 0) return null;
 
   return (
     <>
