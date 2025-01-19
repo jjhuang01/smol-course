@@ -185,10 +185,11 @@ export default function Doc({ source, frontMatter }) {
             pre: (props) => {
               const isMermaid = props.children?.props?.className === 'language-mermaid';
               if (isMermaid) {
+                const chart = props.children.props.children;
                 return (
                   <div className="my-8">
                     <Mermaid 
-                      chart={props.children.props.children}
+                      chart={chart}
                       config={{
                         theme: 'dark',
                         fontSize: 16,
@@ -201,7 +202,7 @@ export default function Doc({ source, frontMatter }) {
                   </div>
                 );
               }
-              return <CodeBlock {...props.children.props} />;
+              return <div className="code-block-wrapper"><CodeBlock {...props.children.props} /></div>;
             },
           }} />
         </article>

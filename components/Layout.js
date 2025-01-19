@@ -71,68 +71,71 @@ const menuItems = [
   }
 ]
 
+// 侧边栏内容组件
 function SidebarContent() {
   const router = useRouter()
 
-  return (
-    <nav className="mt-5 flex-1 px-2 space-y-1" aria-label="Sidebar">
-      {menuItems.map((item) => (
-        <div key={item.title} className="space-y-1">
-          {item.items ? (
-            <Disclosure defaultOpen={item.items.some(subItem => router.asPath === subItem.path)}>
-              {({ open }) => (
-                <>
-                  <Disclosure.Button className="w-full flex items-center px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900 group">
-                    <div className="flex items-center min-w-[120px]">
-                      <span className="mr-2">{item.icon}</span>
-                      <span className="mr-2">{item.index}</span>
-                      <span>{item.title}</span>
-                    </div>
-                    <ChevronRightIcon
-                      className={`${
-                        open ? 'transform rotate-90' : ''
-                      } ml-auto w-5 h-5 text-gray-400 transition-transform duration-150 ease-in-out group-hover:text-gray-500`}
-                    />
-                  </Disclosure.Button>
-                  <Disclosure.Panel className="space-y-1">
-                    {item.items.map((subItem) => (
-                      <Link
-                        key={subItem.path}
-                        href={subItem.path}
-                        className={`group flex items-center pl-12 pr-2 py-2 text-sm font-medium rounded-md ${
-                          router.asPath === subItem.path
-                            ? 'text-primary-600 bg-primary-50'
-                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                        }`}
-                      >
-                        <div className="flex items-center min-w-[120px]">
-                          <span className="mr-2">{subItem.index}</span>
-                          <span>{subItem.title}</span>
-                        </div>
-                      </Link>
-                    ))}
+  const renderMenuItem = (item, depth = 0) => {
+    const isActive = router.asPath === item.path
+    const hasSubItems = item.items && item.items.length > 0
+    
+    return (
+      <div key={item.title} className={`pl-${depth * 4}`}>
+        {item.path ? (
+          <Link
+            href={item.path}
+            className={`flex items-center px-4 py-2 text-sm font-medium ${
+              isActive
+                ? 'text-primary-600 bg-primary-50 dark:bg-primary-900/10'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700'
+            }`}
+          >
+            {item.icon && <span className="mr-2">{item.icon}</span>}
+            <span>{item.title}</span>
+          </Link>
+        ) : (
+          <Disclosure defaultOpen>
+            {({ open }) => (
+              <>
+                <Disclosure.Button
+                  className="flex items-center w-full px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700 cursor-pointer"
+                >
+                  {item.icon && <span className="mr-2">{item.icon}</span>}
+                  <span>{item.title}</span>
+                  <ChevronRightIcon
+                    className={`ml-auto h-4 w-4 transform transition-transform duration-200 ${
+                      open ? 'rotate-90' : ''
+                    }`}
+                  />
+                </Disclosure.Button>
+                <Transition
+                  enter="transition duration-100 ease-out"
+                  enterFrom="transform scale-95 opacity-0"
+                  enterTo="transform scale-100 opacity-100"
+                  leave="transition duration-75 ease-out"
+                  leaveFrom="transform scale-100 opacity-100"
+                  leaveTo="transform scale-95 opacity-0"
+                >
+                  <Disclosure.Panel className="pl-4">
+                    {item.items?.map((subItem) => renderMenuItem(subItem, depth + 1))}
                   </Disclosure.Panel>
-                </>
-              )}
-            </Disclosure>
-          ) : (
-            <Link
-              href={item.path}
-              className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                router.asPath === item.path
-                  ? 'text-primary-600 bg-primary-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              <div className="flex items-center min-w-[120px]">
-                <span className="mr-2">{item.icon}</span>
-                <span className="mr-2">{item.index}</span>
-                <span>{item.title}</span>
-              </div>
-            </Link>
-          )}
-        </div>
-      ))}
+                </Transition>
+              </>
+            )}
+          </Disclosure>
+        )}
+        {hasSubItems && item.path && (
+          <div className="ml-4">
+            {item.items.map((subItem) => renderMenuItem(subItem, depth + 1))}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <nav className="mt-5 flex-1 px-2 space-y-1">
+      {menuItems.map((item) => renderMenuItem(item))}
     </nav>
   )
 }
@@ -142,7 +145,9 @@ export default function Layout({ children }) {
   const router = useRouter()
 
   useEffect(() => {
-    Prism.highlightAll()
+    if (typeof window !== 'undefined') {
+      Prism.highlightAll()
+    }
   }, [children])
 
   // 获取当前页面的前后页面
@@ -177,65 +182,45 @@ export default function Layout({ children }) {
   const { prevPage, nextPage } = getCurrentPageInfo();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="h-screen flex overflow-hidden">
       <ProgressBar />
-      <div className="flex h-screen overflow-hidden">
-        {/* Mobile sidebar */}
-        <div className="lg:hidden">
-          <Transition.Root show={isSidebarOpen} as={Fragment}>
-            <Dialog as="div" className="fixed inset-0 flex z-40" onClose={setIsSidebarOpen}>
-              <Transition.Child
-                as={Fragment}
-                enter="transition-opacity ease-linear duration-300"
-                enterFrom="opacity-0"
-                enterTo="opacity-100"
-                leave="transition-opacity ease-linear duration-300"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
-              >
-                <Dialog.Overlay className="fixed inset-0 bg-gray-600 bg-opacity-75" />
-              </Transition.Child>
-              <Transition.Child
-                as={Fragment}
-                enter="transition ease-in-out duration-300 transform"
-                enterFrom="-translate-x-full"
-                enterTo="translate-x-0"
-                leave="transition ease-in-out duration-300 transform"
-                leaveFrom="translate-x-0"
-                leaveTo="-translate-x-full"
-              >
-                <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white dark:bg-gray-800">
-                  <div className="absolute top-0 right-0 -mr-12 pt-2">
-                    <button
-                      type="button"
-                      className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-                      onClick={() => setIsSidebarOpen(false)}
-                    >
-                      <span className="sr-only">关闭侧边栏</span>
-                      <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
-                    </button>
-                  </div>
-                  <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
-                    <div className="flex-shrink-0 flex items-center px-4">
-                      <Link href="/" className="text-xl font-bold text-primary-600">
-                        SMOL Course
-                      </Link>
-                    </div>
-                    <SidebarContent />
-                  </div>
-                </div>
-              </Transition.Child>
-              <div className="flex-shrink-0 w-14">{/* Force sidebar to shrink to fit close icon */}</div>
-            </Dialog>
-          </Transition.Root>
-        </div>
-
-        {/* Desktop sidebar */}
-        <div className="hidden lg:flex lg:flex-shrink-0">
-          <div className="flex flex-col w-64 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-            <div className="flex-1 flex flex-col min-h-0">
-              <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-                <div className="flex items-center flex-shrink-0 px-4">
+      
+      {/* Sidebar for mobile */}
+      <Transition.Root show={isSidebarOpen} as={Fragment}>
+        <Dialog as="div" className="fixed inset-0 flex z-40" onClose={setIsSidebarOpen}>
+          <Transition.Child
+            as={Fragment}
+            enter="transition-opacity ease-linear duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition-opacity ease-linear duration-300"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <Dialog.Overlay className="fixed inset-0 bg-gray-600 bg-opacity-75" />
+          </Transition.Child>
+          <Transition.Child
+            as={Fragment}
+            enter="transition ease-in-out duration-300 transform"
+            enterFrom="-translate-x-full"
+            enterTo="translate-x-0"
+            leave="transition ease-in-out duration-300 transform"
+            leaveFrom="translate-x-0"
+            leaveTo="-translate-x-full"
+          >
+            <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white dark:bg-gray-800">
+              <div className="absolute top-0 right-0 -mr-12 pt-2">
+                <button
+                  type="button"
+                  className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  <span className="sr-only">关闭侧边栏</span>
+                  <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                </button>
+              </div>
+              <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
+                <div className="flex-shrink-0 flex items-center px-4">
                   <Link href="/" className="text-xl font-bold text-primary-600">
                     SMOL Course
                   </Link>
@@ -243,49 +228,65 @@ export default function Layout({ children }) {
                 <SidebarContent />
               </div>
             </div>
-          </div>
-        </div>
+          </Transition.Child>
+        </Dialog>
+      </Transition.Root>
 
-        {/* Main content */}
-        <div className="flex flex-col w-0 flex-1 overflow-hidden">
-          <div className="relative z-10 flex-shrink-0 flex h-16 bg-white dark:bg-gray-800 shadow">
-            <button
-              type="button"
-              className="px-4 border-r border-gray-200 dark:border-gray-700 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 lg:hidden"
-              onClick={() => setIsSidebarOpen(true)}
-            >
-              <span className="sr-only">打开侧边栏</span>
-              <Bars3Icon className="h-6 w-6" aria-hidden="true" />
-            </button>
-
-            {/* Header tools */}
-            <div className="flex-1 px-4 flex justify-end">
-              <div className="ml-4 flex items-center space-x-4">
-                <Search menuItems={menuItems} />
-                <ThemeToggle />
+      {/* Static sidebar for desktop */}
+      <div className="hidden lg:flex lg:flex-shrink-0">
+        <div className="flex flex-col w-64">
+          <div className="flex flex-col min-h-0 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+            <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
+              <div className="flex items-center flex-shrink-0 px-4">
+                <Link href="/" className="text-xl font-bold text-primary-600">
+                  SMOL Course
+                </Link>
               </div>
+              <SidebarContent />
             </div>
           </div>
-
-          <main className="flex-1 relative overflow-y-auto focus:outline-none">
-            <div className="py-6">
-              <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{ duration: 0.3 }}
-                  className="prose dark:prose-dark max-w-none"
-                >
-                  {children}
-                  <Pagination prevPage={prevPage} nextPage={nextPage} />
-                </motion.div>
-              </div>
-            </div>
-          </main>
         </div>
-        <TableOfContents />
       </div>
+
+      {/* Main content */}
+      <div className="flex flex-col w-0 flex-1 overflow-hidden">
+        <div className="relative z-10 flex-shrink-0 flex h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <button
+            type="button"
+            className="px-4 border-r border-gray-200 dark:border-gray-700 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 lg:hidden"
+            onClick={() => setIsSidebarOpen(true)}
+          >
+            <span className="sr-only">打开侧边栏</span>
+            <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+          </button>
+
+          {/* Header tools */}
+          <div className="flex-1 px-4 flex justify-end">
+            <div className="ml-4 flex items-center space-x-4">
+              <Search menuItems={menuItems} />
+              <ThemeToggle />
+            </div>
+          </div>
+        </div>
+
+        <main className="flex-1 relative overflow-y-auto focus:outline-none">
+          <div className="py-6">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.3 }}
+                className="prose dark:prose-dark max-w-none"
+              >
+                {children}
+                <Pagination prevPage={prevPage} nextPage={nextPage} />
+              </motion.div>
+            </div>
+          </div>
+        </main>
+      </div>
+      <TableOfContents />
     </div>
   )
 } 
