@@ -76,8 +76,16 @@ function SidebarContent() {
   const router = useRouter()
 
   const renderMenuItem = (item, depth = 0) => {
-    const isActive = router.asPath === item.path
+    // 解码路径进行比较
+    const currentPath = decodeURIComponent(router.asPath)
+    const itemPath = item.path ? decodeURIComponent(item.path) : null
+    const isActive = currentPath === itemPath
     const hasSubItems = item.items && item.items.length > 0
+    
+    // 检查子项是否被选中
+    const hasActiveChild = hasSubItems && item.items.some(subItem => 
+      decodeURIComponent(subItem.path) === currentPath
+    )
     
     return (
       <div key={item.title} className={`pl-${depth * 4}`}>
@@ -86,21 +94,27 @@ function SidebarContent() {
             href={item.path}
             className={`flex items-center px-4 py-2 text-sm font-medium ${
               isActive
-                ? 'text-primary-600 bg-primary-50 dark:bg-primary-900/10'
+                ? 'text-primary-600 bg-primary-50 dark:bg-primary-900/10 font-bold'
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700'
             }`}
           >
             {item.icon && <span className="mr-2">{item.icon}</span>}
+            <span className="mr-2 text-gray-400">{item.index}</span>
             <span>{item.title}</span>
           </Link>
         ) : (
-          <Disclosure defaultOpen>
+          <Disclosure defaultOpen={hasActiveChild}>
             {({ open }) => (
               <>
                 <Disclosure.Button
-                  className="flex items-center w-full px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700 cursor-pointer"
+                  className={`flex items-center w-full px-4 py-2 text-sm font-medium ${
+                    hasActiveChild
+                      ? 'text-primary-600 bg-primary-50 dark:bg-primary-900/10 font-bold'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700'
+                  } cursor-pointer`}
                 >
                   {item.icon && <span className="mr-2">{item.icon}</span>}
+                  <span className="mr-2 text-gray-400">{item.index}</span>
                   <span>{item.title}</span>
                   <ChevronRightIcon
                     className={`ml-auto h-4 w-4 transform transition-transform duration-200 ${
@@ -156,7 +170,11 @@ export default function Layout({ children }) {
     const flatten = (items) => {
       items.forEach(item => {
         if (item.path) {
-          flattenedItems.push(item);
+          flattenedItems.push({
+            title: item.title,
+            path: item.path,
+            index: item.index
+          });
         }
         if (item.items) {
           flatten(item.items);
@@ -165,14 +183,32 @@ export default function Layout({ children }) {
     };
     flatten(menuItems);
 
-    // 确保按照索引排序
+    // 使用版本号比较算法来排序
     flattenedItems.sort((a, b) => {
-      const aIndex = parseFloat(a.index.replace(/[^0-9.]/g, ''));
-      const bIndex = parseFloat(b.index.replace(/[^0-9.]/g, ''));
-      return aIndex - bIndex;
+      const aIndexParts = a.index.split('.').map(Number);
+      const bIndexParts = b.index.split('.').map(Number);
+      
+      // 比较每一级的索引
+      for (let i = 0; i < Math.max(aIndexParts.length, bIndexParts.length); i++) {
+        const aValue = aIndexParts[i] || 0;
+        const bValue = bIndexParts[i] || 0;
+        if (aValue !== bValue) {
+          return aValue - bValue;
+        }
+      }
+      return 0;
     });
 
-    const currentIndex = flattenedItems.findIndex(item => item.path === router.asPath);
+    // 解码当前路径进行比较
+    const currentPath = decodeURIComponent(router.asPath);
+    const currentIndex = flattenedItems.findIndex(item => decodeURIComponent(item.path) === currentPath);
+    
+    // 确保找到了当前页面
+    if (currentIndex === -1) {
+      console.warn('Current page not found in menu items:', currentPath);
+      return { prevPage: null, nextPage: null };
+    }
+
     return {
       prevPage: currentIndex > 0 ? flattenedItems[currentIndex - 1] : null,
       nextPage: currentIndex < flattenedItems.length - 1 ? flattenedItems[currentIndex + 1] : null
@@ -271,7 +307,7 @@ export default function Layout({ children }) {
 
         <main className="flex-1 relative overflow-y-auto focus:outline-none">
           <div className="py-6">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 xl:pr-72">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
