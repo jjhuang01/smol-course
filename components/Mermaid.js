@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { ArrowsPointingOutIcon, ArrowsPointingInIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 function MermaidComponent({ chart, config = {} }) {
   const ref = useRef(null);
   const [isClient, setIsClient] = useState(false);
   const [error, setError] = useState(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [scale, setScale] = useState(1);
+  const fullscreenRef = useRef(null);
 
   useEffect(() => {
     setIsClient(true);
@@ -113,14 +117,82 @@ function MermaidComponent({ chart, config = {} }) {
     renderChart();
   }, [chart, config, isClient]);
 
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
+    setScale(1); // 重置缩放
+  };
+
+  const handleZoomIn = () => {
+    setScale(prev => Math.min(prev + 0.2, 3));
+  };
+
+  const handleZoomOut = () => {
+    setScale(prev => Math.max(prev - 0.2, 0.5));
+  };
+
   if (!isClient) {
     return null;
   }
 
   return (
-    <div className="mermaid-wrapper">
-      <div ref={ref} className="mermaid dark:text-white" />
-    </div>
+    <>
+      <div className="mermaid-wrapper group relative">
+        <div ref={ref} className="mermaid dark:text-white" />
+        <button
+          onClick={toggleFullscreen}
+          className="absolute top-2 right-2 p-2 bg-gray-800/70 hover:bg-gray-800 rounded-lg text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          title="全屏查看"
+        >
+          <ArrowsPointingOutIcon className="h-5 w-5" />
+        </button>
+      </div>
+
+      {isFullscreen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="relative w-full h-full max-w-[90vw] max-h-[90vh] m-4 bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-auto">
+            <div className="sticky top-0 z-10 flex justify-between items-center p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={handleZoomOut}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                  title="缩小"
+                >
+                  <ArrowsPointingInIcon className="h-5 w-5" />
+                </button>
+                <span className="text-sm text-gray-600 dark:text-gray-300">
+                  {Math.round(scale * 100)}%
+                </span>
+                <button
+                  onClick={handleZoomIn}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                  title="放大"
+                >
+                  <ArrowsPointingOutIcon className="h-5 w-5" />
+                </button>
+              </div>
+              <button
+                onClick={toggleFullscreen}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                title="关闭全屏"
+              >
+                <XMarkIcon className="h-6 w-6" />
+              </button>
+            </div>
+            <div 
+              ref={fullscreenRef}
+              className="p-4 flex items-center justify-center min-h-[calc(100vh-10rem)]"
+              style={{
+                transform: `scale(${scale})`,
+                transformOrigin: 'center center',
+                transition: 'transform 0.2s ease-in-out'
+              }}
+            >
+              <div className="mermaid dark:text-white" dangerouslySetInnerHTML={{ __html: ref.current?.innerHTML || '' }} />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

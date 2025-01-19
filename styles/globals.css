@@ -282,6 +282,36 @@
 
 .mermaid svg {
   @apply max-w-full h-auto;
+  min-width: 600px; /* 设置最小宽度 */
+}
+
+/* 全屏模式下的样式 */
+.mermaid-fullscreen {
+  @apply fixed inset-0 z-50 bg-white dark:bg-gray-900;
+  @apply flex items-center justify-center;
+}
+
+.mermaid-fullscreen .mermaid svg {
+  @apply max-w-[90vw] max-h-[90vh];
+  min-width: 800px; /* 全屏模式下的最小宽度 */
+}
+
+/* 缩放控制样式 */
+.zoom-controls {
+  @apply fixed top-4 right-4 flex items-center space-x-2;
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2;
+  @apply z-50;
+}
+
+.zoom-button {
+  @apply p-2 rounded-lg transition-colors duration-200;
+  @apply hover:bg-gray-100 dark:hover:bg-gray-700;
+  @apply focus:outline-none focus:ring-2 focus:ring-primary-500;
+}
+
+/* 动画过渡效果 */
+.mermaid-transition {
+  @apply transition-all duration-300 ease-in-out;
 }
 
 .mermaid .actor {
