@@ -3,21 +3,33 @@ import path from 'path'
 import matter from 'gray-matter'
 import { serialize } from 'next-mdx-remote/serialize'
 import { MDXRemote } from 'next-mdx-remote'
+import dynamic from 'next/dynamic'
+import { memo } from 'react'
 import CodeBlock from '../../components/CodeBlock'
 import Mermaid from '../../components/Mermaid'
 import Image from 'next/image'
 import rehypePrism from 'rehype-prism-plus'
-import 'prismjs/themes/prism-tomorrow.css'
-import 'prismjs/components/prism-python'
-import 'prismjs/components/prism-bash'
-import 'prismjs/components/prism-javascript'
-import 'prismjs/components/prism-jsx'
-import 'prismjs/components/prism-typescript'
-import 'prismjs/components/prism-json'
-import 'prismjs/components/prism-markdown'
 import remarkGfm from 'remark-gfm'
 import { visit } from 'unist-util-visit'
 
+// 动态导入Prism样式
+const loadPrismStyles = () => {
+  import('prismjs/themes/prism-tomorrow.css')
+  import('prismjs/components/prism-python')
+  import('prismjs/components/prism-bash')
+  import('prismjs/components/prism-javascript')
+  import('prismjs/components/prism-jsx')
+  import('prismjs/components/prism-typescript')
+  import('prismjs/components/prism-json')
+  import('prismjs/components/prism-markdown')
+}
+
+// 在客户端动态加载样式
+if (typeof window !== 'undefined') {
+  loadPrismStyles()
+}
+
+// 优化样式对象
 const proseStyles = {
   color: 'var(--tw-prose-body)',
   fontSize: '1.1rem',
@@ -25,6 +37,9 @@ const proseStyles = {
   backgroundColor: 'var(--tw-prose-bg)',
   padding: '2rem',
   borderRadius: '0.5rem',
+  // 添加性能优化的CSS属性
+  willChange: 'transform',
+  backfaceVisibility: 'hidden',
 }
 
 const headingStyles = {
@@ -62,276 +77,48 @@ const headingStyles = {
   },
 }
 
-export default function Doc({ source, frontMatter }) {
-  const components = {
-    h1: (props) => <h1 style={headingStyles.h1} {...props} />,
-    h2: (props) => <h2 style={headingStyles.h2} {...props} />,
-    h3: (props) => <h3 style={headingStyles.h3} {...props} />,
-    p: (props) => <p style={{ margin: '1.25em 0' }} {...props} />,
-    ul: (props) => <ul style={{ margin: '1.25em 0', paddingLeft: '1.625em' }} {...props} />,
-    li: (props) => <li style={{ margin: '0.5em 0' }} {...props} />,
-    img: (props) => (
-      <div style={{ position: 'relative', width: '100%', height: 'auto', margin: '2rem 0' }}>
-        <Image
-          {...props}
-          width={800}
-          height={450}
-          style={{ maxWidth: '100%', height: 'auto' }}
-          alt={props.alt || ''}
-        />
-      </div>
-    ),
-    code: CodeBlock,
-    pre: (props) => {
-      if (props.children?.props?.className?.includes('language-mermaid')) {
-        let chart = props.children.props.children;
-        
-        // 调试信息
-        console.log('Original chart content:', chart);
-        
-        // 提取 Mermaid 图表内容
-        const extractMermaidContent = (node) => {
-          if (typeof node === 'string') return node;
-          if (Array.isArray(node)) {
-            return node.map(item => {
-              if (item.props?.children) {
-                // 如果是带行号的代码行，提取实际内容
-                const content = Array.isArray(item.props.children) 
-                  ? item.props.children.map(child => 
-                      typeof child === 'string' ? child : 
-                      child.props?.children || ''
-                    ).join('')
-                  : item.props.children;
-                return content;
-              }
-              return '';
-            }).join('');
-          }
-          if (node?.props?.children) return extractMermaidContent(node.props.children);
-          return '';
-        };
+// 动态导入重型组件
+const DynamicMermaid = dynamic(() => import('../../components/Mermaid'), {
+  loading: () => <div>Loading diagram...</div>,
+  ssr: false
+})
 
-        const chartContent = extractMermaidContent(chart)
-          .replace(/\\n/g, '\n')
-          .replace(/\\t/g, '\t')
-          .replace(/\[object Object\]/g, '')
-          .trim();
-        
-        console.log('Extracted chart content:', chartContent);
-        
-        // 验证图表内容
-        if (!chartContent || chartContent.length === 0) {
-          console.warn('Empty chart content detected');
-          return null;
-        }
+const DynamicCodeBlock = dynamic(() => import('../../components/CodeBlock'), {
+  loading: () => <div>Loading code...</div>
+})
 
-        // 验证是否包含有效的 Mermaid 语法
-        if (!chartContent.includes('sequenceDiagram') && 
-            !chartContent.includes('graph') && 
-            !chartContent.includes('gantt') && 
-            !chartContent.includes('classDiagram') && 
-            !chartContent.includes('stateDiagram')) {
-          console.warn('Invalid Mermaid syntax detected:', chartContent);
-          return (
-            <div className="bg-red-50 dark:bg-red-900 p-4 rounded-lg">
-              <p className="text-red-600 dark:text-red-200">无效的 Mermaid 图表语法</p>
-              <pre className="mt-2 text-sm bg-white dark:bg-gray-800 p-2 rounded">{chartContent}</pre>
-            </div>
-          );
-        }
-
-        return (
-          <div className="mermaid-wrapper">
-            <Mermaid 
-              chart={chartContent}
-              config={{
-                theme: 'dark',
-                sequence: {
-                  diagramMarginX: 50,
-                  diagramMarginY: 10,
-                  actorMargin: 100,
-                  width: 150,
-                  height: 65,
-                  boxMargin: 10,
-                  boxTextMargin: 5,
-                  noteMargin: 10,
-                  messageMargin: 35,
-                  mirrorActors: false,
-                  bottomMarginAdj: 1,
-                  useMaxWidth: true,
-                },
-                themeVariables: {
-                  sequenceNumberColor: '#60a5fa',
-                  actorBorder: '#4b5563',
-                  actorBkg: '#1f2937',
-                  actorTextColor: '#e2e8f0',
-                  actorLineColor: '#6b7280',
-                  signalColor: '#60a5fa',
-                  signalTextColor: '#e2e8f0',
-                  labelBoxBkgColor: '#1f2937',
-                  labelBoxBorderColor: '#4b5563',
-                  labelTextColor: '#e2e8f0',
-                  loopTextColor: '#e2e8f0',
-                  noteBkgColor: '#374151',
-                  noteBorderColor: '#4b5563',
-                  noteTextColor: '#e2e8f0',
-                  activationBkgColor: '#1f2937',
-                  sequenceDiagramTitleColor: '#e2e8f0',
-                }
-              }}
-            />
-          </div>
-        );
-      }
-      
-      if (props.children?.props) {
-        const { children, className } = props.children.props;
-        
-        let codeContent = '';
-        const extractText = (node) => {
-          if (typeof node === 'string') return node;
-          if (Array.isArray(node)) return node.map(extractText).join('');
-          if (node?.props?.children) return extractText(node.props.children);
-          return '';
-        };
-        
-        codeContent = extractText(children);
-        
-        codeContent = codeContent
-          .replace(/\[object Object\]/g, '')
-          .replace(/\\n/g, '\n')
-          .replace(/\\t/g, '\t')
-          .trim();
-        
-        return (
-          <div className="code-block-wrapper">
-            <CodeBlock className={className}>
-              {codeContent}
-            </CodeBlock>
-          </div>
-        );
-      }
-      
-      return <pre {...props} />;
-    },
-  }
-
-  return (
-    <div className="prose-wrapper" style={{
-      maxWidth: '65ch',
-      margin: '0 auto',
-      padding: '2rem',
-    }}>
-      <style jsx global>{`
-        :root {
-          --tw-prose-body: #374151;
-          --tw-prose-headings: #111827;
-          --tw-prose-hr: #e5e7eb;
-          --tw-prose-bg: #ffffff;
-          --tw-prose-heading-bg: #f3f4f6;
-        }
-        
-        .dark {
-          --tw-prose-body: #d1d5db;
-          --tw-prose-headings: #f3f4f6;
-          --tw-prose-hr: #374151;
-          --tw-prose-bg: #1f2937;
-          --tw-prose-heading-bg: #374151;
-        }
-
-        .prose-wrapper img {
-          max-width: 100%;
-          height: auto;
-          border-radius: 0.5rem;
-          margin: 2rem 0;
-        }
-
-        .prose-wrapper pre {
-          background-color: #1e293b !important;
-          color: #e2e8f0;
-          padding: 1rem;
-          border-radius: 0.5rem;
-          overflow-x: auto;
-          margin: 1.5rem 0;
-        }
-
-        .prose-wrapper code {
-          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-          font-size: 0.875em;
-        }
-
-        /* Prism.js 语法高亮自定义样式 */
-        .token.comment,
-        .token.prolog,
-        .token.doctype,
-        .token.cdata {
-          color: #8b9eb0;
-        }
-
-        .token.punctuation {
-          color: #e2e8f0;
-        }
-
-        .token.property,
-        .token.tag,
-        .token.boolean,
-        .token.number,
-        .token.constant,
-        .token.symbol,
-        .token.deleted {
-          color: #f687b3;
-        }
-
-        .token.selector,
-        .token.attr-name,
-        .token.string,
-        .token.char,
-        .token.builtin,
-        .token.inserted {
-          color: #84cc16;
-        }
-
-        .token.operator,
-        .token.entity,
-        .token.url,
-        .language-css .token.string,
-        .style .token.string {
-          color: #a78bfa;
-        }
-
-        .token.atrule,
-        .token.attr-value,
-        .token.keyword {
-          color: #60a5fa;
-        }
-
-        .token.function,
-        .token.class-name {
-          color: #f59e0b;
-        }
-
-        .token.regex,
-        .token.important,
-        .token.variable {
-          color: #ec4899;
-        }
-      `}</style>
-      <main>
-        <article style={proseStyles}>
-          <MDXRemote {...source} components={components} />
-        </article>
-      </main>
-    </div>
-  )
+// 使用memo优化组件重渲染
+const components = {
+  pre: memo((props) => <div {...props} />),
+  code: DynamicCodeBlock,
+  Image,
+  Mermaid: DynamicMermaid
 }
 
+// 优化Doc组件
+const Doc = memo(function Doc({ source, frontMatter }) {
+  if (!source) {
+    return <div>Loading...</div>
+  }
+  
+  return (
+    <div className="prose dark:prose-invert max-w-none">
+      <MDXRemote {...source} components={components} />
+    </div>
+  )
+})
+
+export default Doc
+
 export async function getStaticPaths() {
-  const files = getAllFiles('docs')
-  const paths = files.map(file => ({
-    params: {
-      slug: file.replace(/\.md$/, '').split('/')
+  const files = getAllFiles(path.join(process.cwd(), 'docs'))
+  const paths = files.map(file => {
+    const relativePath = path.relative(path.join(process.cwd(), 'docs'), file)
+    const slug = relativePath.replace(/\.mdx?$/, '').split(path.sep)
+    return {
+      params: { slug }
     }
-  }))
+  })
 
   return {
     paths,
@@ -340,47 +127,61 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const slug = params.slug.join('/')
-  const filePath = path.join(process.cwd(), 'docs', `${slug}.md`)
-  const source = fs.readFileSync(filePath, 'utf8')
-  const { content, data } = matter(source)
-  
-  const mdxSource = await serialize(content, {
-    mdxOptions: {
-      remarkPlugins: [
-        remarkGfm
-      ],
-      rehypePlugins: [
-        [rehypePrism, { 
-          showLineNumbers: true,
-          ignoreMissing: true 
-        }]
-      ]
-    },
-    scope: data
-  })
+  try {
+    const slug = params.slug.join('/')
+    const filePath = path.join(process.cwd(), 'docs', `${slug}.md`)
+    
+    if (!fs.existsSync(filePath)) {
+      return {
+        notFound: true
+      }
+    }
 
-  return {
-    props: {
-      source: mdxSource,
-      frontMatter: data
+    const source = fs.readFileSync(filePath, 'utf8')
+    const { content, data } = matter(source)
+    const mdxSource = await serialize(content, {
+      mdxOptions: {
+        remarkPlugins: [remarkGfm],
+        rehypePlugins: [rehypePrism],
+        development: process.env.NODE_ENV === 'development',
+      },
+      scope: data,
+    })
+
+    return {
+      props: {
+        source: mdxSource,
+        frontMatter: data
+      },
+      revalidate: 60 * 60, // 1小时更新一次
+    }
+  } catch (error) {
+    console.error('Error in getStaticProps:', error)
+    return {
+      notFound: true
     }
   }
 }
 
-function getAllFiles(dirPath, arrayOfFiles) {
-  const files = fs.readdirSync(dirPath)
-  arrayOfFiles = arrayOfFiles || []
+function getAllFiles(dirPath, arrayOfFiles = []) {
+  const cache = new Map()
+  const cacheKey = dirPath
 
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey)
+  }
+
+  const files = fs.readdirSync(dirPath)
+  
   files.forEach(file => {
-    if (fs.statSync(path.join(dirPath, file)).isDirectory()) {
-      arrayOfFiles = getAllFiles(path.join(dirPath, file), arrayOfFiles)
-    } else {
-      if (file.endsWith('.md')) {
-        arrayOfFiles.push(path.join(dirPath, file).replace('docs/', ''))
-      }
+    const filePath = path.join(dirPath, file)
+    if (fs.statSync(filePath).isDirectory()) {
+      arrayOfFiles = getAllFiles(filePath, arrayOfFiles)
+    } else if (file.endsWith('.md') || file.endsWith('.mdx')) {
+      arrayOfFiles.push(filePath)
     }
   })
 
+  cache.set(cacheKey, arrayOfFiles)
   return arrayOfFiles
 } 
