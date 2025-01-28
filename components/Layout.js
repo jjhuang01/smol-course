@@ -11,6 +11,7 @@ import Pagination from './Pagination'
 import ProgressBar from './ProgressBar'
 import TableOfContents from './TableOfContents'
 import CodeBlock from './CodeBlock'
+import ResizableSidebar from './ResizableSidebar'
 
 const menuItems = [
   {
@@ -35,61 +36,94 @@ const menuItems = [
         icon: '🔰',
         index: '3.1',
         items: [
-          { title: 'Python数据科学基础', path: '/docs/学习资料/Python数据科学基础', index: '3.1.1' },
-          { title: '统计学基础知识', path: '/docs/学习资料/统计学基础知识', index: '3.1.2' },
-          { title: '统计学入门：像讲故事一样学习', path: '/docs/学习资料/统计学入门：像讲故事一样学习', index: '3.1.3' },
-          { title: '人工智能核心公式详解', path: '/docs/学习资料/人工智能核心公式详解', index: '3.1.4' },
-          { title: 'AI关键词详解', path: '/docs/学习资料/AI关键词详解', index: '3.1.5' },
-          { title: 'AI提示词模板', path: '/docs/学习资料/AI提示词模板', index: '3.1.6' }
+          { title: 'AI基础认知厨房', path: '/docs/基础入门/【概念】AI基础认知厨房', index: '3.1.1' },
+          { title: 'Python数据科学基础', path: '/docs/学习资料/Python数据科学基础', index: '3.1.2' },
+          { title: '统计学基础知识', path: '/docs/学习资料/统计学基础知识', index: '3.1.3' },
+          { title: '统计学入门：像讲故事一样学习', path: '/docs/学习资料/统计学入门：像讲故事一样学习', index: '3.1.4' },
+          { title: '人工智能核心公式详解', path: '/docs/学习资料/人工智能核心公式详解', index: '3.1.5' },
+          { title: 'AI关键词详解', path: '/docs/学习资料/AI关键词详解', index: '3.1.6' },
+          { title: 'AI提示词模板', path: '/docs/学习资料/AI提示词模板', index: '3.1.7' },
+          { title: 'AI学习路径指南', path: '/docs/学习资料/AI学习路径指南', index: '3.1.8' }
+        ]
+      },
+      {
+        title: '数学基础',
+        icon: '🧮',
+        index: '3.2',
+        items: [
+          { title: '厨房里的微积分', path: '/docs/学习资料/数学基石/厨房里的微积分', index: '3.2.1' },
+          { title: '煮鸡蛋的微积分', path: '/docs/学习资料/数学厨房/煮鸡蛋的微积分', index: '3.2.2' },
+          { title: '超市里的概率论', path: '/docs/学习资料/数学厨房/超市里的概率论', index: '3.2.3' }
         ]
       },
       {
         title: '进阶内容',
         icon: '📈',
-        index: '3.2',
+        index: '3.3',
         items: [
-          { title: 'PyTorch深度学习基础', path: '/docs/学习资料/PyTorch深度学习基础', index: '3.2.1' },
-          { title: '机器学习算法详解', path: '/docs/学习资料/机器学习算法详解', index: '3.2.2' },
-          { title: '深度学习架构详解', path: '/docs/学习资料/深度学习架构详解', index: '3.2.3' },
-          { title: '深度学习中的Dropout详解', path: '/docs/学习资料/深度学习中的Dropout详解', index: '3.2.4' },
-          { title: 'AI前沿技术详解', path: '/docs/学习资料/AI前沿技术详解', index: '3.2.5' },
-          { title: '统计学详解', path: '/docs/学习资料/统计学详解', index: '3.2.6' },
-          { title: '统计学重点内容详解', path: '/docs/学习资料/统计学重点内容详解', index: '3.2.7' }
+          { title: 'PyTorch深度学习基础', path: '/docs/学习资料/PyTorch深度学习基础', index: '3.3.1' },
+          { title: '机器学习算法详解', path: '/docs/学习资料/机器学习算法详解', index: '3.3.2' },
+          { title: '深度学习架构', path: '/docs/学习资料/深度学习架构', index: '3.3.3' },
+          { title: '深度学习中的Dropout详解', path: '/docs/学习资料/深度学习中的Dropout详解', index: '3.3.4' },
+          { title: '深度学习中的注意力机制详解', path: '/docs/学习资料/深度学习中的注意力机制详解', index: '3.3.5' },
+          { title: 'CNN架构进阶', path: '/docs/学习资料/CNN架构进阶', index: '3.3.6' },
+          { title: 'RNN与序列模型', path: '/docs/学习资料/RNN与序列模型', index: '3.3.7' },
+          { title: '图神经网络入门', path: '/docs/学习资料/图神经网络入门', index: '3.3.8' },
+          { title: '强化学习基础与实践', path: '/docs/学习资料/强化学习基础与实践', index: '3.3.9' },
+          { title: '大模型微调技术详解', path: '/docs/学习资料/大模型微调技术详解', index: '3.3.10' },
+          { title: '生成式AI模型原理与应用', path: '/docs/学习资料/生成式AI模型原理与应用', index: '3.3.11' },
+          { title: 'AI前沿技术详解', path: '/docs/学习资料/AI前沿技术详解', index: '3.3.12' }
         ]
       },
       {
         title: '实践指南',
         icon: '🛠️',
-        index: '3.3',
+        index: '3.4',
         items: [
-          { title: 'AI实战项目指南', path: '/docs/学习资料/AI实战项目指南', index: '3.3.1' },
-          { title: '数据集详解：像生活一样理解数据', path: '/docs/学习资料/数据集详解：像生活一样理解数据', index: '3.3.2' },
-          { title: '模型评估与概率模型详解', path: '/docs/学习资料/模型评估与概率模型详解', index: '3.3.3' },
-          { title: '假设检验详解', path: '/docs/学习资料/假设检验详解', index: '3.3.4' }
+          { title: 'AI实战项目指南', path: '/docs/学习资料/AI实战项目指南', index: '3.4.1' },
+          { title: '数据集详解：像生活一样理解数据', path: '/docs/学习资料/数据集详解：像生活一样理解数据', index: '3.4.2' },
+          { title: '模型评估与概率模型详解', path: '/docs/学习资料/模型评估与概率模型详解', index: '3.4.3' },
+          { title: '假设检验详解', path: '/docs/学习资料/假设检验详解', index: '3.4.4' },
+          { title: 'AI模型部署与工程实践', path: '/docs/学习资料/AI模型部署与工程实践', index: '3.4.5' },
+          { title: 'MLOps实践指南', path: '/docs/学习资料/MLOps实践指南', index: '3.4.6' },
+          { title: '联邦学习实践', path: '/docs/学习资料/联邦学习实践', index: '3.4.7' },
+          { title: '模型调优实战手册', path: '/docs/学习资料/模型调优实战手册', index: '3.4.8' },
+          { title: '生活化AI实验室', path: '/docs/学习资料/生活化AI实验室', index: '3.4.9' },
+          { title: 'AI错题本', path: '/docs/学习资料/AI错题本', index: '3.4.10' },
+          { title: '过拟合案例', path: '/docs/学习资料/模型实验室/过拟合案例', index: '3.4.11' }
         ]
       }
     ]
   },
   {
-    title: '练习日志',
-    icon: '📝',
+    title: '实战应用',
+    icon: '🔬',
     index: '4',
     items: [
-      { title: '练习日志说明', path: '/docs/练习日志/README', index: '4.1' },
-      { title: '代码问题解决方案', path: '/docs/练习日志/解决方案/代码问题解决方案', index: '4.2' },
-      { title: '模型问题解决方案', path: '/docs/练习日志/解决方案/模型问题解决方案', index: '4.3' },
-      { title: '环境问题解决方案', path: '/docs/练习日志/解决方案/环境问题解决方案', index: '4.4' }
+      { title: 'AI实验工坊', path: '/docs/实战应用/【实验】AI实验工坊', index: '4.1' }
+    ]
+  },
+  {
+    title: '实践指南',
+    icon: '🔧',
+    index: '5',
+    items: [
+      { title: '性能优化指南', path: '/docs/实践指南/性能优化指南', index: '5.1' },
+      { title: '常见问题解决', path: '/docs/实践指南/常见问题解决', index: '5.2' },
+      { title: '开源项目实践', path: '/docs/实践指南/开源项目实践', index: '5.3' },
+      { title: '商业应用实例', path: '/docs/实践指南/商业应用实例', index: '5.4' }
     ]
   },
   {
     title: '系统文档',
     icon: '📘',
-    index: '5',
+    index: '6',
     items: [
-      { title: '目录索引', path: '/docs/目录索引', index: '5.1' },
-      { title: '文档更新规则', path: '/docs/文档更新规则', index: '5.2' },
-      { title: '系统架构设计', path: '/docs/系统架构设计', index: '5.3' },
-      { title: '问题解决指南', path: '/docs/问题解决指南', index: '5.4' }
+      { title: '目录索引', path: '/docs/目录索引', index: '6.1' },
+      { title: '文档更新规则', path: '/docs/文档更新规则', index: '6.2' },
+      { title: '系统架构设计', path: '/docs/系统架构设计', index: '6.3' },
+      { title: '问题解决指南', path: '/docs/问题解决指南', index: '6.4' },
+      { title: '版本记录', path: '/docs/版本记录', index: '6.5' }
     ]
   }
 ]
@@ -171,7 +205,7 @@ function SidebarContent() {
   }
 
   return (
-    <nav className="mt-5 flex-1 px-2 space-y-1">
+    <nav className="flex-1 space-y-1">
       {menuItems.map((item) => renderMenuItem(item))}
     </nav>
   )
@@ -249,6 +283,14 @@ export default function Layout({ children }) {
 
   const { prevPage, nextPage } = getCurrentPageInfo();
 
+  // 修改导航链接样式，确保服务端和客户端一致
+  const linkClassName = ({ isActive }) => 
+    `flex items-center px-4 py-2 text-sm font-medium ${
+      isActive 
+        ? 'text-primary-600 bg-primary-50 dark:bg-primary-900/10 font-bold' 
+        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700'
+    } transition-colors duration-200 rounded-lg`
+
   return (
     <div className="h-screen flex overflow-hidden">
       <ProgressBar />
@@ -290,7 +332,7 @@ export default function Layout({ children }) {
               <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
                 <div className="flex-shrink-0 flex items-center px-4">
                   <Link href="/" className="text-xl font-bold text-primary-600">
-                    SMOL Course
+                    Jay - Blog
                   </Link>
                 </div>
                 <SidebarContent />
@@ -302,26 +344,22 @@ export default function Layout({ children }) {
 
       {/* Static sidebar for desktop */}
       <div className="hidden lg:flex lg:flex-shrink-0">
-        <div className="flex flex-col w-64">
-          <div className="flex flex-col min-h-0 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-            <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-              <div className="flex items-center flex-shrink-0 px-4">
-                <Link href="/" className="text-xl font-bold text-primary-600">
-                  SMOL Course
-                </Link>
-              </div>
-              <SidebarContent />
-            </div>
+        <ResizableSidebar>
+          <div className="flex-shrink-0 h-16 flex items-center px-4 border-b border-gray-200 dark:border-gray-700">
+            <Link href="/" className="text-xl font-bold text-primary-600">
+              SMOL Course
+            </Link>
           </div>
-        </div>
+          <SidebarContent />
+        </ResizableSidebar>
       </div>
 
       {/* Main content */}
       <div className="flex flex-col w-0 flex-1 overflow-hidden">
-        <div className="relative z-10 flex-shrink-0 flex h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="relative z-10 flex-shrink-0 h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
           <button
             type="button"
-            className="px-4 border-r border-gray-200 dark:border-gray-700 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 lg:hidden"
+            className="h-16 px-4 border-r border-gray-200 dark:border-gray-700 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 lg:hidden"
             onClick={() => setIsSidebarOpen(true)}
           >
             <span className="sr-only">打开侧边栏</span>

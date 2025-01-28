@@ -252,23 +252,227 @@
   }
 }
 
-/* 自定义滚动条样式 */
+/* 全局滚动条样式 - Apple Style */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 3px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #666;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode scrollbar */
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* 侧边栏内容滚动条样式优化 */
+.sidebar-content {
+  height: calc(100vh - 64px); /* 统一高度为64px */
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  -ms-overflow-style: none;
+  padding: 1rem;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sidebar-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-content:hover::-webkit-scrollbar-thumb {
+  opacity: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sidebar-content::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .sidebar-content:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* 菜单项样式优化 */
+.menu-item {
+  @apply flex items-center px-4 py-2 text-sm font-medium transition-colors duration-200;
+}
+
+.menu-item:hover {
+  @apply bg-gray-50 dark:bg-gray-700;
+}
+
+.menu-item.active {
+  @apply text-primary-600 bg-primary-50 dark:bg-primary-900/10 font-bold;
+}
+
+/* 子菜单过渡动画 */
+.submenu-enter {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+.submenu-enter-active {
+  max-height: 1000px;
+  opacity: 1;
+}
+
+.submenu-exit {
+  max-height: 1000px;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+.submenu-exit-active {
+  max-height: 0;
+  opacity: 0;
+}
+
+/* 优化性能 */
+.sidebar-content {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 可调整宽度的侧边栏样式 */
+.resizable-sidebar {
+  position: relative;
+  flex-shrink: 0;
+  height: 100vh;
+  transition: background-color 0.2s ease;
+  will-change: width;
+  contain: strict;
+  display: flex;
+  flex-direction: column;
+}
+
+.resizable-handle {
+  position: absolute;
+  top: 0;
+  right: -3px;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  touch-action: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.resizable-handle:hover,
+.resizing .resizable-handle {
+  opacity: 1;
+}
+
+.resizable-handle::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: 100%;
+  width: 4px;
+  transform: translateX(-50%);
+  background-color: var(--color-primary-500);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.resizable-handle:hover::after,
+.resizing .resizable-handle::after {
+  opacity: 0.5;
+}
+
+/* 拖动时禁用文本选择 */
+.resizing,
+.resizing * {
+  user-select: none !important;
+  cursor: col-resize !important;
+}
+
+/* 拖动时的遮罩层 */
+.resize-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background-color: transparent;
+  cursor: col-resize;
+}
+
+/* 优化标题样式 */
+.sticky-header {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.1);
+  transition: all 0.3s ease;
+}
+
+.sticky-header.scrolled {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 优化内容区域样式 */
+.mdx-content {
+  padding-top: 1rem;
+}
+
+.mdx-content > *:first-child {
+  margin-top: 0;
+}
+
+/* 优化过渡动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.content-animation {
+  animation: fadeIn 0.3s ease-out;
 }
 
 /* Mermaid 图表样式 */
@@ -353,4 +557,62 @@
 .mermaid .activation1,
 .mermaid .activation2 {
   @apply fill-gray-100 dark:fill-gray-800;
+}
+
+/* MDX容器样式 */
+.mdx-container {
+  position: relative;
+  overflow-y: auto;
+  height: calc(100vh - 80px); /* 减去头部高度 */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 虚拟列表样式 */
+.virtual-list {
+  scrollbar-width: thin;
+  scrollbar-color: var(--tw-prose-body) transparent;
+}
+
+.virtual-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.virtual-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.virtual-list::-webkit-scrollbar-thumb {
+  background-color: var(--tw-prose-body);
+  border-radius: 3px;
+}
+
+/* MDX内容样式 */
+.mdx-content {
+  padding: 0.5rem 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.mdx-content:hover {
+  background-color: var(--tw-prose-bg);
+  border-radius: 0.5rem;
+}
+
+/* 优化代码块样式 */
+.mdx-content pre {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--tw-prose-pre-bg);
+  overflow-x: auto;
+}
+
+/* 优化图片加载 */
+.mdx-content img {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.mdx-content img.loaded {
+  opacity: 1;
 } 

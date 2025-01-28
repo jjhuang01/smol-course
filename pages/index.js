@@ -4,8 +4,8 @@ export default function Home() {
   return (
     <div className="container">
       <main className="main">
-        <h1 className="title">SMOL Course</h1>
-        <p className="description">欢迎来到 SMOL Course 学习平台</p>
+        <h1 className="title">Jay - blog</h1>
+        <p className="description">欢迎来到 Jay - blog 学习平台</p>
         <div className="grid">
           <Link href="/docs/学习指南" className="card">
             <div className="card-content">

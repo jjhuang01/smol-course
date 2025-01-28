@@ -13,7 +13,8 @@ const withMDX = createMDX({
         aliases: {
           text: 'plaintext',
           sh: 'bash',
-          js: 'javascript'
+          js: 'javascript',
+          prompt: 'bash'
         }
       }]
     ],
@@ -47,6 +48,22 @@ const nextConfig = {
     
     return config;
   },
+
+  async rewrites() {
+    return [
+      {
+        source: '/_next/data/:path*',
+        destination: '/_next/data/:path*',
+        has: [
+          {
+            type: 'query',
+            key: 'slug',
+            value: '(?<slug>.*)'
+          }
+        ]
+      }
+    ]
+  }
 }
 
 export default withMDX(nextConfig) 
